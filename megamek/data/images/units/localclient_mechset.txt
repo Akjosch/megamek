@@ -18,6 +18,7 @@
 # As of v0.29.61, mechset files can include other mechset files.
 
 ### Add new entries between this and end ###
+exact "Marauder MAD-3R" "marauder.svg"
 ### End ###
 
 # Add any include files below so that they override what is in this file.

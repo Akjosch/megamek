@@ -23,13 +23,20 @@ package megamek.client.ui.swing;
 
 import java.awt.Component;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import megamek.common.Aero;
 import megamek.common.BattleArmor;
@@ -156,6 +163,9 @@ public class MechTileset {
 
     private HashMap<String, MechEntry> exact = new HashMap<String, MechEntry>();
     private HashMap<String, MechEntry> chassis = new HashMap<String, MechEntry>();
+    
+    // Image loaders
+    private List<MechImageLoader> imageLoaders = null;
 
     File dir;
 
@@ -171,6 +181,7 @@ public class MechTileset {
             throw new IllegalArgumentException("must provide dir_path");
         }
         dir = new File(dir_path);
+        initDefaultImageLoaders();
     }
 
     /**
@@ -184,8 +195,17 @@ public class MechTileset {
             throw new IllegalArgumentException("must provide dir_path");
         }
         dir = dir_path;
+        initDefaultImageLoaders();
     }
 
+    private void initDefaultImageLoaders() {
+    	if (null == imageLoaders) {
+    		imageLoaders = new ArrayList<MechTileset.MechImageLoader>(2);
+    		imageLoaders.add(new SVGMechImageLoader());
+    		imageLoaders.add(new AWTMechImageLoader());
+    	}
+    }
+    
     public Image imageFor(Entity entity, Component comp, int secondaryPos) {
         MechEntry entry = entryFor(entity, secondaryPos);
 
@@ -510,7 +530,37 @@ public class MechTileset {
                         "load a file that doesn't exist: "
                         + fin.getPath());
             }
+            for (MechImageLoader loader : imageLoaders) {
+            	image = loader.loadImage(fin, comp.getToolkit());
+            	if (null != image) {
+            		return;
+            	}
+            }
+            // Fallback, should NEVER be reached
             image = comp.getToolkit().getImage(fin.toString());
         }
+    }
+    
+    /** Alternative loaders for some image types not supported by AWT */
+    public static abstract class MechImageLoader {
+    	/** Return <i>null</i> if loader is not applicable for the image type */
+    	public abstract Image loadImage(File file, Toolkit toolkit);
+    }
+    
+    private static class SVGMechImageLoader extends MechImageLoader {
+		@Override
+		public Image loadImage(File file, Toolkit toolkit) {
+			Image svgImage = SVGImage.fromFile(file);
+			return svgImage;
+		}
+    }
+    
+    /** Default AWT image loader, should come last in list */
+    private static class AWTMechImageLoader extends MechImageLoader {
+		@Override
+		public Image loadImage(File file, Toolkit toolkit) {
+			return toolkit.getImage(file.toString());
+		}
+    	
     }
 }
