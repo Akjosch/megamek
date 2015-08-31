@@ -1,11 +1,13 @@
 package megamek.client.ui.swing.image;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageProducer;
 import java.awt.image.Raster;
@@ -17,93 +19,52 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import com.kitfox.svg.Path;
 import com.kitfox.svg.SVGDiagram;
-import com.kitfox.svg.SVGElement;
-import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGUniverse;
-import com.kitfox.svg.animation.AnimationElement;
 
-public final class SVGImage extends BufferedImage implements TransformableImage, FilterableImage {
-    private final static SVGUniverse universe = new SVGUniverse();
-    
+public final class SVGImage extends BufferedImage implements SelfScalingImage, TintableImage {
+	private final static SVGUniverse universe = new SVGUniverse();
+	
     public static SVGImage fromFile(File file) {
-        SVGDiagram svg = null;
-        try(InputStream fileStream = new FileInputStream(file)) {
-            URI svgFile = universe.loadSVG(fileStream, file.toString());
-            svg = universe.getDiagram(svgFile);
-        } catch (IOException e) {
-            return null;
-        }
-        if (null == svg) {
-            return null;
-        }
-        svg.setIgnoringClipHeuristic(true);
+    	SVGDiagram svg = null;
+    	try(InputStream fileStream = new FileInputStream(file)) {
+			URI svgFile = universe.loadSVG(fileStream, file.toString());
+			svg = universe.getDiagram(svgFile);
+		} catch (IOException e) {
+			return null;
+		}
+    	if (null == svg) {
+    		return null;
+    	}
+		svg.setIgnoringClipHeuristic(true);
         return new SVGImage(svg);
     }
     
     private boolean rendered = false;
     private final SVGDiagram svg;
     private RasterOp rasterOperation = null;
-    private Point2D pivot = null;
-    private double rotation = 0.0;
     
     private SVGImage(SVGDiagram svg) {
-        this(svg, (int)svg.getWidth(), (int)svg.getHeight());
+    	this(svg, (int)svg.getWidth(), (int)svg.getHeight());
     }
     
     private SVGImage(SVGDiagram svg, int width, int height) {
-        super(width, height, BufferedImage.TYPE_INT_ARGB);
-        this.svg = svg;
-        SVGElement pivotElement = svg.getElement("pivot");
-        if (pivotElement instanceof Path) {
-            PathIterator pivotPath = ((Path)pivotElement).getShape().getPathIterator(null);
-            if (!pivotPath.isDone()) {
-                double[] coords = new double[6];
-                pivotPath.currentSegment(coords);
-                pivot = new Point2D.Double(coords[0], coords[1]);
-            }
-            // Hide the pivot path element
-            try {
-                pivotElement.setAttribute("display", AnimationElement.AT_CSS, "none");
-            } catch (SVGElementException e) {
-                // Ignore
-            }
-        }
-        if (null == pivot) {
-            // Create a pivot in the middle of the SVG image
-            pivot = new Point2D.Double(svg.getWidth() / 2.0, svg.getHeight() / 2.0);
-        }
-    }
-    
-    /** Clone constructor */
-    private SVGImage(SVGImage other) {
-        this(other.svg, other.getWidth(), other.getHeight());
-        this.rasterOperation = other.rasterOperation;
-        this.pivot = other.pivot;
-        this.rotation = other.rotation;
-    }
-    
-    /** Clone constructor with explicit width/height */
-    private SVGImage(SVGImage other, int width, int height) {
-        this(other.svg, width, height);
-        this.rasterOperation = other.rasterOperation;
-        this.pivot = other.pivot;
-        this.rotation = other.rotation;
+    	super(width, height, BufferedImage.TYPE_INT_ARGB);
+    	this.svg = svg;
     }
     
     @Override
     public void coerceData(boolean isAlphaPremultiplied) {
         if (!rendered) {
-            render();
+        	render();
         }
         super.coerceData(isAlphaPremultiplied);
     }
     @Override
     public WritableRaster copyData(WritableRaster outRaster) {
         if (!rendered) {
-            render();
+        	render();
         }
         return super.copyData(outRaster);
     }
@@ -111,7 +72,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     @Override
     public WritableRaster getAlphaRaster() {
         if (!rendered) {
-            render();
+        	render();
         }
         return super.getAlphaRaster();
     }
@@ -119,7 +80,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     @Override
     public Raster getData() {
         if (!rendered) {
-            render();
+        	render();
         }
         return super.getData();
     }
@@ -127,7 +88,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     @Override
     public Graphics getGraphics() {
         if (!rendered) {
-            render();
+        	render();
         }
         return super.getGraphics();
     }
@@ -135,67 +96,129 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     @Override
     public ImageProducer getSource() {
         if (!rendered) {
-            render();
+        	render();
         }
-        return super.getSource();
+    	return super.getSource();
     }
     
     @Override
     public Image getScaledInstance(int width, int height, int hints) {
-        SVGImage result = new SVGImage(this, width, height);
-        result.render();
-        return result;
+    	return new SVGImage(svg, width, height);
     }
     
-    @Override
-    public Image getRotatedInstance(double rot) {
-        SVGImage result = new SVGImage(this);
-        result.pivot = null != pivot ? pivot : new Point2D.Double(getWidth() / 2.0, getHeight() / 2.0);
-        result.rotation = rot;
-        result.render();
-        return result;
-    }
     
-    @Override
-    public Image withFilter(RasterOp filter) {
-        SVGImage result = new SVGImage(this);
-        result.rasterOperation = filter;
-        result.render();
-        return result;
-    }
+    /* (non-Javadoc)
+	 * @see megamek.client.ui.swing.image.TintableImage#withTint(java.awt.Color)
+	 */
+	@Override
+	public TintableImage withTint(Color tint) {
+		SVGImage result = new SVGImage(svg, this.getWidth(), this.getHeight());
+		result.rasterOperation = new ColorTintOp(tint);
+		return result;
+	}
 
-    @Override
-    public Image setRasterOperation(RasterOp filter) {
-        rasterOperation = filter;
-        rendered = false;
-        render();
-        return this;
-    }
+	/* (non-Javadoc)
+	 * @see megamek.client.ui.swing.image.TintableImage#withCamo(java.awt.Image)
+	 */
+	@Override
+	public TintableImage withCamo(Image camo) {
+		SVGImage result = new SVGImage(svg, this.getWidth(), this.getHeight());
+		result.rasterOperation = new CamoOp(camo);
+		return result;
+	}
 
-    private void render() {
+	private void render() {
         Graphics2D gfx = (Graphics2D)super.getGraphics();
         gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        // Scaling
-        gfx.scale(getWidth() / svg.getWidth(), getHeight() / svg.getHeight());
-        if (0.0 != rotation) {
-            gfx.translate(pivot.getX(), pivot.getY());
-            gfx.rotate(rotation);
-            gfx.translate(-pivot.getX(), -pivot.getY());
-        }
         try {
-            svg.render(gfx);
+        	svg.render(gfx);
             rendered = true;
         } catch (SVGException te) {
-            System.out.println("Could not transcode " + svg + " to raster image; you're going to get a blank BufferedImage of the correct size.");
+        	System.out.println("Could not transcode " + svg + " to raster image; you're going to get a blank BufferedImage of the correct size.");
         } finally {
             gfx.dispose();
         }
-        // Apply camo or tint (or other operations/filters) if available
-        if (null != rasterOperation) {
-            WritableRaster raster = rasterOperation.filter(getRaster(), null);
-            setData(raster);
-        }
+    	// Apply camo or tint if available
+    	if (null != rasterOperation) {
+    		// TODO: Apply
+    	}
     }
+	
+	private static class ColorTintOp implements RasterOp {
+		private final Color tint;
+		
+		public ColorTintOp(Color tint) {
+			this.tint = tint;
+		}
+
+		@Override
+		public WritableRaster filter(Raster src, WritableRaster dest) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Rectangle2D getBounds2D(Raster src) {
+			return src.getBounds();
+		}
+
+		@Override
+		public WritableRaster createCompatibleDestRaster(Raster src) {
+			return src.createCompatibleWritableRaster();
+		}
+
+		@Override
+		public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
+			if (dstPt == null) {
+			       return (Point2D)srcPt.clone();
+			}
+			dstPt.setLocation(srcPt);
+			return dstPt;
+		}
+
+		@Override
+		public RenderingHints getRenderingHints() {
+			return null;
+		}
+	}
+	
+	private static class CamoOp implements RasterOp {
+		private final Image camo;
+		
+		public CamoOp(Image camo) {
+			this.camo = camo;
+		}
+
+		@Override
+		public WritableRaster filter(Raster src, WritableRaster dest) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Rectangle2D getBounds2D(Raster src) {
+			return src.getBounds();
+		}
+
+		@Override
+		public WritableRaster createCompatibleDestRaster(Raster src) {
+			return src.createCompatibleWritableRaster();
+		}
+
+		@Override
+		public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
+			if (dstPt == null) {
+			       return (Point2D)srcPt.clone();
+			}
+			dstPt.setLocation(srcPt);
+			return dstPt;
+		}
+
+		@Override
+		public RenderingHints getRenderingHints() {
+			return null;
+		}
+	}
 }

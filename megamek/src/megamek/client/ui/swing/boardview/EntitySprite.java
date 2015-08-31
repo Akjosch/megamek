@@ -175,6 +175,7 @@ class EntitySprite extends Sprite {
     @Override
     public void prepare() {
         final IBoard board = bv.game.getBoard();
+        final float scale = bv.scale;
         
         // figure out size
         String shortName = entity.getShortName();
@@ -217,7 +218,7 @@ class EntitySprite extends Sprite {
             if (onlyDetectedBySensors() && !bv.useIsometric()) {
                 graph.drawImage(radarBlipImage, 0, 0, this);
             } else {
-                graph.drawImage(bv.tileManager.imageFor(entity, secondaryPos),
+                graph.drawImage(bv.getScaledImage(bv.tileManager.imageFor(entity, secondaryPos), false),
                         0, 0, this);
             }
         }
