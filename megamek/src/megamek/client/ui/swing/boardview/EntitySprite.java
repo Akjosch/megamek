@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
@@ -199,7 +200,8 @@ class EntitySprite extends Sprite {
         Image tempImage;
         Graphics2D graph;
         try {
-            tempImage = this.bv.createImage(bounds.width, bounds.height);
+            // OLD: tempImage = this.bv.createImage(bounds.width, bounds.height);
+            tempImage = new BufferedImage((int)(bounds.width * scale), (int)(bounds.height * scale), BufferedImage.TYPE_INT_ARGB);             //this.bv.createImage((int)(bounds.width * scale), (int)(bounds.height * scale));
             // fill with key color
             graph = (Graphics2D)tempImage.getGraphics();
         } catch (NullPointerException ex) {
@@ -207,7 +209,7 @@ class EntitySprite extends Sprite {
             return;
         }
 
-        graph.setColor(new Color(BoardView1.TRANSPARENT));
+        graph.setColor(new Color(0, true));
         graph.fillRect(0, 0, bounds.width, bounds.height);
         if (!this.bv.useIsometric()) {
             // The entity sprite is drawn when the hexes are rendered.
@@ -256,16 +258,12 @@ class EntitySprite extends Sprite {
             graph.drawString(shortName, tempRect.x + 1,
                     (tempRect.y + tempRect.height) - 1);
 
-           
             // Past here, everything is drawing status that shouldn't be seen
             // on a sensor return, so we'll just quit here
             if (onlyDetectedBySensors()) {
                 // create final image
-                image = bv.getScaledImage(bv
-                        .createImage(new FilteredImageSource(tempImage
-                                .getSource(), new KeyAlphaFilter(
-                                BoardView1.TRANSPARENT))), false);
-
+                image = this.bv.createImage(new FilteredImageSource(tempImage.getSource(),
+                        new KeyAlphaFilter(BoardView1.TRANSPARENT)));
                 graph.dispose();
                 tempImage.flush();
                 return;
@@ -605,7 +603,7 @@ class EntitySprite extends Sprite {
             }
 
             // Lets draw our armor and internal status bars
-            int baseBarLength = 23;
+            int baseBarLength = (int)(23 * scale);
             int barLength = 0;
             double percentRemaining = 0.00;
 
@@ -613,9 +611,9 @@ class EntitySprite extends Sprite {
             barLength = (int) (baseBarLength * percentRemaining);
 
             graph.setColor(Color.darkGray);
-            graph.fillRect(56, 7, 23, 3);
+            graph.fillRect(56, 7, baseBarLength, 3);
             graph.setColor(Color.lightGray);
-            graph.fillRect(55, 6, 23, 3);
+            graph.fillRect(55, 6, baseBarLength, 3);
             graph.setColor(getStatusBarColor(percentRemaining));
             graph.fillRect(55, 6, barLength, 3);
 
@@ -625,9 +623,9 @@ class EntitySprite extends Sprite {
                 barLength = (int) (baseBarLength * percentRemaining);
 
                 graph.setColor(Color.darkGray);
-                graph.fillRect(56, 11, 23, 3);
+                graph.fillRect(56, 11, baseBarLength, 3);
                 graph.setColor(Color.lightGray);
-                graph.fillRect(55, 10, 23, 3);
+                graph.fillRect(55, 10, baseBarLength, 3);
                 graph.setColor(getStatusBarColor(percentRemaining));
                 graph.fillRect(55, 10, barLength, 3);
             }
@@ -642,9 +640,8 @@ class EntitySprite extends Sprite {
         }
 
         // create final image
-        image = this.bv.getScaledImage(this.bv
-                .createImage(new FilteredImageSource(tempImage.getSource(),
-                        new KeyAlphaFilter(BoardView1.TRANSPARENT))),false);
+        image = this.bv.createImage(new FilteredImageSource(tempImage.getSource(),
+                        new KeyAlphaFilter(BoardView1.TRANSPARENT)));
 
         graph.dispose();
         tempImage.flush();

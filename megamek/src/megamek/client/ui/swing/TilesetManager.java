@@ -711,6 +711,40 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
             return image;
         }
     }
+    
+    /** Entity image based on a vector (infinitively scalable) base image). Currently just SVG format is supported */
+    private class VectorEntityImage extends EntityImage {
+        public VectorEntityImage(Image base, int tint, Image camo, Component comp) {
+            super(base, null, tint, camo, comp);
+        }
+        
+        public VectorEntityImage(Image base, Image wreck, int tint, Image camo, Component comp) {
+            super(base, wreck, tint, camo, comp);
+        }
+
+        /* (non-Javadoc)
+         * @see megamek.client.ui.swing.TilesetManager.EntityImage#loadFacings()
+         */
+        @Override
+        public void loadFacings() {
+            base = applyColor(base);
+
+            icon = base.getScaledInstance(56, 48, Image.SCALE_SMOOTH);
+            for (int i = 0; i < 6; i++) {
+                facings[i] = ((SVGImage)base).getRotatedInstance((Math.PI / 3) * i);
+            }
+            // TODO: wreck
+        }
+
+        /* (non-Javadoc)
+         * @see megamek.client.ui.swing.TilesetManager.EntityImage#applyColor(java.awt.Image)
+         */
+        @Override
+        protected Image applyColor(Image image) {
+            // TODO: Camo
+            return ((SVGImage)image).withTint(new Color(tint));
+        }
+    }
 
     private void createDefaultHexSet(){
         try {
