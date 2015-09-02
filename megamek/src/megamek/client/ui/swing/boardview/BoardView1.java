@@ -192,7 +192,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
     static final int HEX_ELEV = 12;
 
     private static final float[] ZOOM_FACTORS = {0.30f, 0.41f, 0.50f, 0.60f,
-                                                 0.68f, 0.79f, 0.90f, 1.00f, 1.09f, 1.17f, 1.3f};
+                                                 0.68f, 0.79f, 0.90f, 1.00f, 1.09f, 1.17f, 1.3f, 5f};
     
     public static int [] allDirections = new int[] {0,1,2,3,4,5};
     

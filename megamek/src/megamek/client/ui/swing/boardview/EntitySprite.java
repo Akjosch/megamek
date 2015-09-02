@@ -191,8 +191,8 @@ class EntitySprite extends Sprite {
             shortName = Messages.getString("BoardView1.sensorReturn"); //$NON-NLS-1$
             face = Font.PLAIN;
         }
-        Font font = new Font("SansSerif", face, 10); //$NON-NLS-1$
-        Rectangle tempRect = new Rectangle(47, 55, this.bv.getFontMetrics(font)
+        Font font = new Font("SansSerif", face, (int)(10 * Math.sqrt(scale))); //$NON-NLS-1$
+        Rectangle tempRect = new Rectangle((int)(47 * scale), (int)(55 * scale), this.bv.getFontMetrics(font)
                 .stringWidth(shortName) + 1, this.bv.getFontMetrics(font)
                 .getAscent());
 
