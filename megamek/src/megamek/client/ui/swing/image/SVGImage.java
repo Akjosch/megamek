@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageProducer;
@@ -16,9 +17,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import com.kitfox.svg.Path;
 import com.kitfox.svg.SVGDiagram;
+import com.kitfox.svg.SVGElement;
+import com.kitfox.svg.SVGElementException;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.animation.AnimationElement;
 
 public final class SVGImage extends BufferedImage implements TransformableImage, FilterableImage {
 	private final static SVGUniverse universe = new SVGUniverse();
@@ -51,6 +56,25 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     private SVGImage(SVGDiagram svg, int width, int height) {
     	super(width, height, BufferedImage.TYPE_INT_ARGB);
     	this.svg = svg;
+    	SVGElement pivotElement = svg.getElement("pivot");
+    	if (pivotElement instanceof Path) {
+    		PathIterator pivotPath = ((Path)pivotElement).getShape().getPathIterator(null);
+    		if (!pivotPath.isDone()) {
+    			double[] coords = new double[6];
+    			pivotPath.currentSegment(coords);
+    			pivot = new Point2D.Double(coords[0], coords[1]);
+    		}
+    		// Hide the pivot path element
+    		try {
+				pivotElement.setAttribute("display", AnimationElement.AT_CSS, "none");
+			} catch (SVGElementException e) {
+				// Ignore
+			}
+    	}
+    	if (null == pivot) {
+    		// Create a pivot in the middle of the SVG image
+    		pivot = new Point2D.Double(svg.getWidth() / 2.0, svg.getHeight() / 2.0);
+    	}
     }
     
     /** Clone constructor */
@@ -127,7 +151,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     public Image getRotatedInstance(Double rot) {
 		SVGImage result = new SVGImage(this);
 		// Pivot in the middle of the place (TODO: Specific pivot)
-		result.pivot = new Point2D.Double(getWidth() / 2.0, getHeight() / 2.0);
+		result.pivot = null != pivot ? pivot : new Point2D.Double(getWidth() / 2.0, getHeight() / 2.0);
 		result.rotation = rot;
     	result.render();
 		return result;
