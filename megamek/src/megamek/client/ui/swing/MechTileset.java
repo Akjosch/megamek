@@ -199,11 +199,11 @@ public class MechTileset {
     }
 
     private void initDefaultImageLoaders() {
-    	if (null == imageLoaders) {
-    		imageLoaders = new ArrayList<MechTileset.MechImageLoader>(2);
-    		imageLoaders.add(new SVGMechImageLoader());
-    		imageLoaders.add(new AWTMechImageLoader());
-    	}
+        if (null == imageLoaders) {
+            imageLoaders = new ArrayList<MechTileset.MechImageLoader>(2);
+            imageLoaders.add(new SVGMechImageLoader());
+            imageLoaders.add(new AWTMechImageLoader());
+        }
     }
     
     public Image imageFor(Entity entity, Component comp, int secondaryPos) {
@@ -405,6 +405,8 @@ public class MechTileset {
         throw new IndexOutOfBoundsException("can't find an image for that mech"); //$NON-NLS-1$
     }
 
+    private static final String TOKEN_TURRET = "turret";
+    
     public void loadFromFile(String filename) throws IOException {
         // make inpustream for board
         Reader r = new BufferedReader(new FileReader(new File(dir, filename)));
@@ -440,16 +442,38 @@ public class MechTileset {
                 name = st.sval;
                 st.nextToken();
                 imageName = st.sval;
+                // Check for optional fields
+                List<String> turrets = null;
+                while (st.nextToken() == StreamTokenizer.TT_WORD) {
+                    if (st.sval.equalsIgnoreCase(TOKEN_TURRET)) {
+                        st.nextToken();
+                        if (null == turrets) {
+                            turrets = new ArrayList<String>();
+                        }
+                        turrets.add(st.sval);
+                    }
+                }
                 // add to list
-                chassis.put(name.toUpperCase(), new MechEntry(name, imageName));
+                chassis.put(name.toUpperCase(), new MechEntry(name, imageName, turrets));
             } else if ((st.ttype == StreamTokenizer.TT_WORD)
                     && st.sval.equalsIgnoreCase("exact")) { //$NON-NLS-1$
                 st.nextToken();
                 name = st.sval;
                 st.nextToken();
                 imageName = st.sval;
+                // Check for optional fields
+                List<String> turrets = null;
+                while (st.nextToken() == StreamTokenizer.TT_WORD) {
+                    if (st.sval.equalsIgnoreCase(TOKEN_TURRET)) {
+                        st.nextToken();
+                        if (null == turrets) {
+                            turrets = new ArrayList<String>();
+                        }
+                        turrets.add(st.sval);
+                    }
+                }
                 // add to list
-                exact.put(name.toUpperCase(), new MechEntry(name, imageName));
+                exact.put(name.toUpperCase(), new MechEntry(name, imageName, turrets));
             }
         }
         r.close();
@@ -511,56 +535,79 @@ public class MechTileset {
      */
     public class MechEntry {
         private String imageFile;
+        private final List<String> turretImageFiles;
         private Image image;
-
+        private final List<Image> turretImages;
+        
         public MechEntry(String name, String imageFile) {
             this.imageFile = imageFile;
+            this.turretImageFiles = null;
             image = null;
+            turretImages = new ArrayList<Image>(0);
+        }
+
+        public MechEntry(String name, String imageFile, List<String> turretImageFiles) {
+            this.imageFile = imageFile;
+            this.turretImageFiles = turretImageFiles;
+            image = null;
+            turretImages = new ArrayList<Image>(null != turretImageFiles ? turretImageFiles.size() : 0);
         }
 
         public Image getImage() {
             return image;
         }
+        
+        public List<Image> getTurretImages() {
+            return turretImages;
+        }
 
-        public void loadImage(Component comp) {
-            // System.out.println("loading mech image...");
-            File fin = new File(dir, imageFile);
-            if (!fin.exists()) {
+        private Image loadImageFromFile(File file, Toolkit toolkit) {
+            if (!file.exists()) {
                 System.out.println("Warning: MechTileSet is trying to " +
-                        "load a file that doesn't exist: "
-                        + fin.getPath());
+                        "load a file that doesn't exist: " + file.getPath());
             }
             for (MechImageLoader loader : imageLoaders) {
-            	image = loader.loadImage(fin, comp.getToolkit());
-            	if (null != image) {
-            		return;
-            	}
+                Image img = loader.loadImage(file, toolkit);
+                if (null != img) {
+                    return img;
+                }
             }
-            // Fallback, should NEVER be reached
-            image = comp.getToolkit().getImage(fin.toString());
+            return null;
+        }
+        
+        public void loadImage(Component comp) {
+            image = loadImageFromFile(new File(dir, imageFile), comp.getToolkit());
+            if (null != turretImageFiles) {
+                for(String turretImageFile : turretImageFiles) {
+                    Image turretImage = loadImageFromFile(new File(dir, turretImageFile), comp.getToolkit());
+                    if (null != turretImage) {
+                        turretImages.add(turretImage);
+                    }
+                }
+            }
         }
     }
     
     /** Alternative loaders for some image types not supported by AWT */
     public static abstract class MechImageLoader {
-    	/** Return <i>null</i> if loader is not applicable for the image type */
-    	public abstract Image loadImage(File file, Toolkit toolkit);
+        /** Return <i>null</i> if loader is not applicable for the image type */
+        public abstract Image loadImage(File file, Toolkit toolkit);
     }
     
     private static class SVGMechImageLoader extends MechImageLoader {
-		@Override
-		public Image loadImage(File file, Toolkit toolkit) {
-			Image svgImage = SVGImage.fromFile(file);
-			return svgImage;
-		}
+        @Override
+        public Image loadImage(File file, Toolkit toolkit) {
+            Image svgImage = SVGImage.fromFile(file);
+            return svgImage;
+        }
     }
     
     /** Default AWT image loader, should come last in list */
     private static class AWTMechImageLoader extends MechImageLoader {
-		@Override
-		public Image loadImage(File file, Toolkit toolkit) {
-			return toolkit.getImage(file.toString());
-		}
-    	
+        @Override
+        public Image loadImage(File file, Toolkit toolkit) {
+            return toolkit.getImage(file.toString());
+        }
+        
     }
 }
