@@ -1,15 +1,12 @@
 package megamek.client.ui.swing.image;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageProducer;
-import java.awt.image.ImagingOpException;
 import java.awt.image.Raster;
 import java.awt.image.RasterOp;
 import java.awt.image.WritableRaster;
@@ -23,7 +20,7 @@ import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGException;
 import com.kitfox.svg.SVGUniverse;
 
-public final class SVGImage extends BufferedImage implements SelfScalingImage, TintableImage {
+public final class SVGImage extends BufferedImage implements TransformableImage, FilterableImage {
 	private final static SVGUniverse universe = new SVGUniverse();
 	
     public static SVGImage fromFile(File file) {
@@ -126,7 +123,7 @@ public final class SVGImage extends BufferedImage implements SelfScalingImage, T
     	return result;
     }
     
-    /** Pass (Double)null for an unrotated instance */
+    @Override
     public Image getRotatedInstance(Double rot) {
 		SVGImage result = new SVGImage(this);
 		// Pivot in the middle of the place (TODO: Specific pivot)
@@ -136,26 +133,20 @@ public final class SVGImage extends BufferedImage implements SelfScalingImage, T
 		return result;
     }
     
-    /* (non-Javadoc)
-	 * @see megamek.client.ui.swing.image.TintableImage#withTint(java.awt.Color)
-	 */
 	@Override
-	public Image withTint(Color tint) {
+	public Image withFilter(RasterOp filter) {
 		SVGImage result = new SVGImage(this);
-		result.rasterOperation = new ColorTintOp(tint);
+		result.rasterOperation = filter;
 		result.render();
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see megamek.client.ui.swing.image.TintableImage#withCamo(java.awt.Image)
-	 */
 	@Override
-	public Image withCamo(Image camo) {
-		SVGImage result = new SVGImage(this);
-		result.rasterOperation = new CamoOp(camo);
-		result.render();
-		return result;
+	public Image setRasterOperation(RasterOp filter) {
+		rasterOperation = filter;
+		rendered = false;
+		render();
+		return this;
 	}
 
 	private void render() {
@@ -184,95 +175,4 @@ public final class SVGImage extends BufferedImage implements SelfScalingImage, T
     		setData(raster);
     	}
     }
-	
-	/** Abstract class for RasterOp instances which don't change the raster size */
-	private static abstract class ConstantSizeRasterOp implements RasterOp {
-		@Override
-		public WritableRaster filter(Raster src, WritableRaster dest) {
-	        if (null == src) {
-	        	throw new NullPointerException("src raster is null");
-	        }
-	        if (src == dest) {
-	            throw new IllegalArgumentException("src raster cannot be the same as the dest raster");
-	        }
-	        if (null == dest) {
-	            dest = createCompatibleDestRaster(src);
-	        }
-            if (src.getHeight() != dest.getHeight() || src.getWidth() != dest.getWidth()) {
-            	throw new IllegalArgumentException("Width or height of rasters do not match");
-            }
-	        if (src.getNumBands() != dest.getNumBands()) {
-	            throw new ImagingOpException("Different number of bands in src and dest rasters");
-	        }
-	        return dest;
-		}
-		
-		@Override
-		public Rectangle2D getBounds2D(Raster src) {
-			return src.getBounds();
-		}
-
-		@Override
-		public WritableRaster createCompatibleDestRaster(Raster src) {
-			return src.createCompatibleWritableRaster();
-		}
-
-		@Override
-		public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
-			if (dstPt == null) {
-			       return (Point2D)srcPt.clone();
-			}
-			dstPt.setLocation(srcPt);
-			return dstPt;
-		}
-
-		@Override
-		public RenderingHints getRenderingHints() {
-			return null;
-		}
-	}
-	
-	private static class ColorTintOp extends ConstantSizeRasterOp {
-		private final float redTint;
-		private final float greenTint;
-		private final float blueTint;
-		
-		public ColorTintOp(Color tint) {
-			float[] tints = tint.getRGBComponents(null);
-			this.redTint = tints[0];
-			this.greenTint = tints[1];
-			this.blueTint = tints[2];
-		}
-
-		@Override
-		public WritableRaster filter(Raster src, WritableRaster dest) {
-			dest = super.filter(src, dest);
-			float[] pixel = new float[4];
-			for (int x = src.getWidth() - 1; x >= 0; -- x) {
-				for (int y = src.getHeight() - 1; y >= 0; -- y) {
-					src.getPixel(x, y, pixel);
-					pixel[0] *= redTint;
-					pixel[1] *= greenTint;
-					pixel[2] *= blueTint;
-					dest.setPixel(x, y, pixel);
-				}
-			}
-			return dest;
-		}
-	}
-	
-	private static class CamoOp extends ConstantSizeRasterOp {
-		private final Image camo;
-		
-		public CamoOp(Image camo) {
-			this.camo = camo;
-		}
-
-		@Override
-		public WritableRaster filter(Raster src, WritableRaster dest) {
-			dest = super.filter(src, dest);
-			// TODO Auto-generated method stub
-			return dest;
-		}
-	}
 }

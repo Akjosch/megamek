@@ -44,6 +44,11 @@ import java.util.List;
 
 import megamek.client.ui.ITilesetManager;
 import megamek.client.ui.swing.boardview.BoardView1;
+import megamek.client.ui.swing.image.CamoOp;
+import megamek.client.ui.swing.image.ColorTintOp;
+import megamek.client.ui.swing.image.FilterableImage;
+import megamek.client.ui.swing.image.SVGImage;
+import megamek.client.ui.swing.image.TransformableImage;
 import megamek.client.ui.swing.util.ImageCache;
 import megamek.client.ui.swing.util.ImageFileFactory;
 import megamek.client.ui.swing.util.PlayerColors;
@@ -606,18 +611,13 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
 
             icon = base.getScaledInstance(56, 48, Image.SCALE_SMOOTH);
             for (int i = 0; i < 6; i++) {
-                ImageProducer rotSource = new FilteredImageSource(base
-                        .getSource(), new RotateFilter((Math.PI / 3) * (6 - i)));
-                facings[i] = parent.createImage(rotSource);
+                facings[i] = applyRotation(base, i);
             }
 
             if (wreck != null) {
                 wreck = applyColor(wreck);
                 for (int i = 0; i < 6; i++) {
-                    ImageProducer rotSource = new FilteredImageSource(wreck
-                            .getSource(), new RotateFilter((Math.PI / 3)
-                            * (6 - i)));
-                    wreckFacings[i] = parent.createImage(rotSource);
+                    wreckFacings[i] = applyRotation(wreck, i);
                 }
             }
         }
@@ -644,11 +644,24 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
             return icon;
         }
 
-        private Image applyColor(Image image) {
-            Image iMech;
+        protected Image applyRotation(Image image, int i) {
+            if (image instanceof TransformableImage) {
+                return ((TransformableImage)image).getRotatedInstance((Math.PI / 3) * i);
+            } else {
+                ImageProducer rotSource = new FilteredImageSource(base.getSource(),
+                        new RotateFilter((Math.PI / 3) * (6 - i)));
+                return parent.createImage(rotSource);
+            }
+        }
+        
+        protected Image applyColor(Image image) {
             boolean useCamo = (camo != null);
 
-            iMech = image;
+            if (image instanceof FilterableImage) {
+                return ((FilterableImage)image).withFilter(useCamo ? new CamoOp(camo) : new ColorTintOp(tint));
+            }
+            
+            Image iMech = image;
 
             int[] pMech = new int[IMG_SIZE];
             int[] pCamo = new int[IMG_SIZE];
@@ -709,40 +722,6 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
             image = parent.createImage(new MemoryImageSource(IMG_WIDTH,
                     IMG_HEIGHT, pMech, 0, IMG_WIDTH));
             return image;
-        }
-    }
-    
-    /** Entity image based on a vector (infinitively scalable) base image). Currently just SVG format is supported */
-    private class VectorEntityImage extends EntityImage {
-        public VectorEntityImage(Image base, int tint, Image camo, Component comp) {
-            super(base, null, tint, camo, comp);
-        }
-        
-        public VectorEntityImage(Image base, Image wreck, int tint, Image camo, Component comp) {
-            super(base, wreck, tint, camo, comp);
-        }
-
-        /* (non-Javadoc)
-         * @see megamek.client.ui.swing.TilesetManager.EntityImage#loadFacings()
-         */
-        @Override
-        public void loadFacings() {
-            base = applyColor(base);
-
-            icon = base.getScaledInstance(56, 48, Image.SCALE_SMOOTH);
-            for (int i = 0; i < 6; i++) {
-                facings[i] = ((SVGImage)base).getRotatedInstance((Math.PI / 3) * i);
-            }
-            // TODO: wreck
-        }
-
-        /* (non-Javadoc)
-         * @see megamek.client.ui.swing.TilesetManager.EntityImage#applyColor(java.awt.Image)
-         */
-        @Override
-        protected Image applyColor(Image image) {
-            // TODO: Camo
-            return ((SVGImage)image).withTint(new Color(tint));
         }
     }
 

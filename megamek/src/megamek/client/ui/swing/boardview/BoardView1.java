@@ -96,6 +96,7 @@ import megamek.client.ui.swing.ChatterBox2;
 import megamek.client.ui.swing.GUIPreferences;
 import megamek.client.ui.swing.MovementDisplay;
 import megamek.client.ui.swing.TilesetManager;
+import megamek.client.ui.swing.image.TransformableImage;
 import megamek.client.ui.swing.util.CommandAction;
 import megamek.client.ui.swing.util.ImageCache;
 import megamek.client.ui.swing.util.ImprovedAveragingScaleFilter;
@@ -116,26 +117,26 @@ import megamek.common.Entity;
 import megamek.common.Flare;
 import megamek.common.IBoard;
 import megamek.common.IGame;
-import megamek.common.Mech;
-import megamek.common.QuadMech;
-import megamek.common.TripodMech;
 import megamek.common.IGame.Phase;
 import megamek.common.IHex;
 import megamek.common.IPlayer;
 import megamek.common.ITerrain;
 import megamek.common.Infantry;
 import megamek.common.LosEffects;
+import megamek.common.Mech;
 import megamek.common.Minefield;
 import megamek.common.Mounted;
 import megamek.common.MovePath;
 import megamek.common.MovePath.MoveStepType;
 import megamek.common.MoveStep;
 import megamek.common.PlanetaryConditions;
+import megamek.common.QuadMech;
 import megamek.common.SpecialHexDisplay;
 import megamek.common.TargetRoll;
 import megamek.common.Targetable;
 import megamek.common.Terrains;
 import megamek.common.ToHitData;
+import megamek.common.TripodMech;
 import megamek.common.UnitLocation;
 import megamek.common.WeaponType;
 import megamek.common.actions.ArtilleryAttackAction;
@@ -5517,6 +5518,9 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
      * The actual scaling code.
      */
     private Image scale(Image img, int width, int height) {
+        if (img instanceof TransformableImage) {
+            return ((TransformableImage)img).getScaledInstance(width, height, Image.SCALE_SMOOTH | Image.SCALE_AREA_AVERAGING);
+        }
         ImageFilter filter;
         filter = new ImprovedAveragingScaleFilter(img.getWidth(null),
                 img.getHeight(null), width, height);
