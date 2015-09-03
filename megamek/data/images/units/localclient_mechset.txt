@@ -19,7 +19,7 @@
 
 ### Add new entries between this and end ###
 exact "Marauder MAD-3R" "marauder.svg" turret "marauder_torso.svg"
-chassis "Zhukov Heavy Tank" "vehicles/zhukov.gif" turret "zhukov_turret.svg"
+chassis "Zhukov Heavy Tank" "zhukov_body.svg" turret "zhukov_turret.svg"
 ### End ###
 
 # Add any include files below so that they override what is in this file.

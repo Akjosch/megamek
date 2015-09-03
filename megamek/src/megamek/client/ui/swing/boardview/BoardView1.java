@@ -5464,7 +5464,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             return null;
         }
         if (zoomIndex == BASE_ZOOM_INDEX) {
-            return base;
+            //return base;
         }
 
 
