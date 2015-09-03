@@ -46,6 +46,7 @@ import megamek.client.ui.ITilesetManager;
 import megamek.client.ui.swing.boardview.BoardView1;
 import megamek.client.ui.swing.image.CamoOp;
 import megamek.client.ui.swing.image.ColorTintOp;
+import megamek.client.ui.swing.image.CompositeImage;
 import megamek.client.ui.swing.image.FilterableImage;
 import megamek.client.ui.swing.image.SVGImage;
 import megamek.client.ui.swing.image.TransformableImage;
@@ -214,9 +215,9 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
 
     public Image imageFor(Entity entity, int secondaryPos) {
         // mechs look like they're facing their secondary facing
-        if ((entity instanceof Mech) || (entity instanceof Protomech)) {
-            return imageFor(entity, entity.getSecondaryFacing(), secondaryPos);
-        }
+        //if ((entity instanceof Mech) || (entity instanceof Protomech)) {
+        //    return imageFor(entity, entity.getSecondaryFacing(), secondaryPos);
+        //}
         return imageFor(entity, entity.getFacing(), secondaryPos);
     }
 
@@ -239,7 +240,12 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
             }
         }
         // get image rotated for facing
-        return entityImage.getFacing(facing);
+        if (entity.canChangeSecondaryFacing()) {
+            // If we have turrets or can twist the torso, try to use a modified image reflecting that
+            return entityImage.getFacing(facing, entity.getSecondaryFacing());
+        } else {
+            return entityImage.getFacing(facing);
+        }
     }
 
     /**
@@ -544,7 +550,11 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
 
         // if we don't have a cached image, make a new one
         if (entityImage == null) {
-            entityImage = new EntityImage(base, wreck, tint, camo, boardview);
+            if (entity.canChangeSecondaryFacing()) {
+                entityImage = new TurretEntityImage(base, wreck, mechTileset.turretImagesFor(entity, boardview, secondaryPos), tint, camo, boardview);
+            } else {
+                   entityImage = new EntityImage(base, wreck, tint, camo, boardview);
+            }
             mechImageList.add(entityImage);
             entityImage.loadFacings();
             for (int j = 0; j < 6; j++) {
@@ -585,9 +595,9 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
         private Image[] wreckFacings = new Image[6];
         private Component parent;
 
-        private static final int IMG_WIDTH = 84;
-        private static final int IMG_HEIGHT = 72;
-        private static final int IMG_SIZE = IMG_WIDTH * IMG_HEIGHT;
+        protected static final int IMG_WIDTH = 84;
+        protected static final int IMG_HEIGHT = 72;
+        protected static final int IMG_SIZE = IMG_WIDTH * IMG_HEIGHT;
 
         public EntityImage(Image base, int tint, Image camo, Component comp) {
             this(base, null, tint, camo, comp);
@@ -631,6 +641,11 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
         public Image getFacing(int facing) {
             return facings[facing];
         }
+        
+        // Compose and return an image with twisted turret or torso
+        public Image getFacing(int facing, int twist) {
+            return facings[facing];
+        }
 
         public Image getWreckFacing(int facing) {
             return wreckFacings[facing];
@@ -648,7 +663,7 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
             if (image instanceof TransformableImage) {
                 return ((TransformableImage)image).getRotatedInstance((Math.PI / 3) * i);
             } else {
-                ImageProducer rotSource = new FilteredImageSource(base.getSource(),
+                ImageProducer rotSource = new FilteredImageSource(image.getSource(),
                         new RotateFilter((Math.PI / 3) * (6 - i)));
                 return parent.createImage(rotSource);
             }
@@ -723,6 +738,34 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
                     IMG_HEIGHT, pMech, 0, IMG_WIDTH));
             return image;
         }
+    }
+    
+    private class TurretEntityImage extends EntityImage {
+        protected List<Image> turretImages;
+        
+        public TurretEntityImage(Image base, Image wreck, List<Image> turretImages, int tint, Image camo, BoardView1 boardview) {
+            super(base, wreck, tint, camo, boardview);
+            this.turretImages = turretImages;
+        }
+
+        /* (non-Javadoc)
+         * @see megamek.client.ui.swing.TilesetManager.EntityImage#getFacing(int, int)
+         */
+        @Override
+        public Image getFacing(int facing, int twist) {
+            Image baseFacing = facings[facing];
+            if (turretImages.size() > 0) {
+                CompositeImage result = new CompositeImage(baseFacing, IMG_WIDTH, IMG_HEIGHT);
+                for( Image turretImage : turretImages ) {
+                    result.addImage(applyRotation(applyColor(turretImage), twist));
+                }
+                return result;
+            } else {
+                return baseFacing;
+            }
+        }
+        
+        
     }
 
     private void createDefaultHexSet(){

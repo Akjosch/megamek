@@ -47,7 +47,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     private final SVGDiagram svg;
     private RasterOp rasterOperation = null;
     private Point2D pivot = null;
-    private Double rotation = null;
+    private double rotation = 0.0;
     
     private SVGImage(SVGDiagram svg) {
     	this(svg, (int)svg.getWidth(), (int)svg.getHeight());
@@ -148,9 +148,8 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
     }
     
     @Override
-    public Image getRotatedInstance(Double rot) {
+    public Image getRotatedInstance(double rot) {
 		SVGImage result = new SVGImage(this);
-		// Pivot in the middle of the place (TODO: Specific pivot)
 		result.pivot = null != pivot ? pivot : new Point2D.Double(getWidth() / 2.0, getHeight() / 2.0);
 		result.rotation = rot;
     	result.render();
@@ -180,7 +179,7 @@ public final class SVGImage extends BufferedImage implements TransformableImage,
         gfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         // Scaling
         gfx.scale(getWidth() / svg.getWidth(), getHeight() / svg.getHeight());
-        if (null != rotation) {
+        if (0.0 != rotation) {
         	gfx.translate(pivot.getX(), pivot.getY());
         	gfx.rotate(rotation);
         	gfx.translate(-pivot.getX(), -pivot.getY());

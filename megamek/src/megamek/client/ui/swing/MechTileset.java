@@ -225,6 +225,24 @@ public class MechTileset {
         return entry.getImage();
     }
 
+    public List<Image> turretImagesFor(Entity entity, Component comp, int secondaryPos) {
+        MechEntry entry = entryFor(entity, secondaryPos);
+        
+        if (entry == null) {
+            System.err
+                    .println("Entry is null make sure that there is a default entry for "
+                            + entity.getShortNameRaw()
+                            + " in both mechset.txt and wreckset.txt.  Default to "
+                            + LIGHT_STRING);
+            System.err.flush();
+            entry = default_light;
+        }
+        
+        if (entry.getImage() == null) {
+            entry.loadImage(comp);
+        }
+        return entry.getTurretImages();
+    }
     /**
      * Returns the MechEntry corresponding to the entity
      */
