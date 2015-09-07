@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import megamek.client.ui.swing.image.ImageLoader;
 import megamek.client.ui.swing.util.ImageCache;
 import megamek.common.Configuration;
 import megamek.common.Hex;
@@ -536,13 +537,10 @@ public class HexTileset {
             for (int i = 0; i < filenames.size(); i++) {
                 String filename = filenames.elementAt(i);
                 File imgFile = new File(Configuration.hexesDir(), filename);
-                if (!imgFile.exists()) {
-                    System.err.println("Error loading image for tileset!  "
-                            + "File does not exist: " + imgFile.getPath());
+                Image image = ImageLoader.loadImageFromFile(imgFile, comp.getToolkit());
+                if (null != image) {
+                	images.addElement(image);
                 }
-                images.addElement(comp.getToolkit().getImage(
-                        imgFile.toString()
-                ));
             }
         }
 
