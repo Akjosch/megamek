@@ -48,6 +48,7 @@ import megamek.client.ui.swing.image.CamoOp;
 import megamek.client.ui.swing.image.ColorTintOp;
 import megamek.client.ui.swing.image.CompositeImage;
 import megamek.client.ui.swing.image.FilterableImage;
+import megamek.client.ui.swing.image.ImageLoader;
 import megamek.client.ui.swing.image.SVGImage;
 import megamek.client.ui.swing.image.TransformableImage;
 import megamek.client.ui.swing.util.ImageCache;
@@ -373,21 +374,15 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
         }
 
         // load minefield sign
-        minefieldSign = boardview.getToolkit().getImage(new File(Configuration.hexesDir(), Minefield.FILENAME_IMAGE).toString());
+        minefieldSign = ImageLoader.loadImageFromFile(new File(Configuration.hexesDir(), Minefield.FILENAME_IMAGE), boardview.getToolkit());
 
         // load night overlay
-        nightFog = boardview.getToolkit().getImage(new File(Configuration.hexesDir(), FILENAME_NIGHT_IMAGE).toString());
+        nightFog = ImageLoader.loadImageFromFile(new File(Configuration.hexesDir(), FILENAME_NIGHT_IMAGE), boardview.getToolkit());
 
         // load artillery targets
-        artilleryAutohit = boardview.getToolkit().getImage(
-                new File(Configuration.hexesDir(), FILENAME_ARTILLERY_AUTOHIT_IMAGE).toString()
-        );
-        artilleryAdjusted = boardview.getToolkit().getImage(
-                new File(Configuration.hexesDir(), FILENAME_ARTILLERY_ADJUSTED_IMAGE).toString()
-        );
-        artilleryIncoming = boardview.getToolkit().getImage(
-                new File(Configuration.hexesDir(), FILENAME_ARTILLERY_INCOMING_IMAGE).toString()
-        );
+        artilleryAutohit = ImageLoader.loadImageFromFile(new File(Configuration.hexesDir(), FILENAME_ARTILLERY_AUTOHIT_IMAGE), boardview.getToolkit());
+        artilleryAdjusted = ImageLoader.loadImageFromFile(new File(Configuration.hexesDir(), FILENAME_ARTILLERY_ADJUSTED_IMAGE), boardview.getToolkit());
+        artilleryIncoming = ImageLoader.loadImageFromFile(new File(Configuration.hexesDir(), FILENAME_ARTILLERY_INCOMING_IMAGE), boardview.getToolkit());
 
         started = true;
     }
