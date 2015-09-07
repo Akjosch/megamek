@@ -21,6 +21,7 @@
 	<classpathentry kind="lib" path="megamek/lib/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="megamek/lib/xstream-1.4.7.jar"/>
 	<classpathentry kind="lib" path="megamek/lib/xstream-distribution-1.4.7-bin.zip"/>
+	<classpathentry kind="lib" path="lib/svgSalamander-0.1.39.jar" sourcepath="lib/svgSalamander-0.1.39-src.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
