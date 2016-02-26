@@ -128,6 +128,7 @@ public class ClientGUI extends JPanel implements WindowListener, BoardViewListen
     public static final String VIEW_TOGGLE_FOV_DARKEN = "viewToggleFovDarken"; //$NON-NLS-1$
     public static final String VIEW_TOGGLE_FOV_HIGHLIGHT = "viewToggleFovHighlight"; //$NON-NLS-1$
     public static final String VIEW_TOGGLE_FIRING_SOLUTIONS = "viewToggleFiringSolutions"; //$NON-NLS-1$
+    public static final String VIEW_TOGGLE_AERO_ALTITUDE = "viewToggleAeroAltitude"; //$NON-NLS-1$
     public static final String VIEW_MOVE_ENV = "viewMovementEnvelope"; //$NON-NLS-1$
     public static final String VIEW_MOVE_MOD_ENV = "viewMovModEnvelope"; //$NON-NLS-1$
     
@@ -781,6 +782,10 @@ public class ClientGUI extends JPanel implements WindowListener, BoardViewListen
                     ((FiringDisplay) curPanel).setFiringSolutions();
                 }
             }
+            bv.refreshDisplayables();
+        } else if (event.getActionCommand().equals(VIEW_TOGGLE_AERO_ALTITUDE)) {
+            GUIPreferences.getInstance().setAeroAltitude(!GUIPreferences.getInstance().getAeroAltitude());
+            bv.clearHexImageCache();
             bv.refreshDisplayables();
         } else if (event.getActionCommand().equals(VIEW_MOVE_ENV)) {
             if (curPanel instanceof MovementDisplay){

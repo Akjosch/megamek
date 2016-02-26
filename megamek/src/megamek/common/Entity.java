@@ -1620,9 +1620,9 @@ public abstract class Entity extends TurnOrdered implements Transporter,
                 }
             }
             if ((getMovementMode() != EntityMovementMode.NAVAL)
-                    && (getMovementMode() != EntityMovementMode.HYDROFOIL)
-                    && (next.containsTerrain(Terrains.BRIDGE) || current
-                            .containsTerrain(Terrains.BRIDGE))) {
+                && (getMovementMode() != EntityMovementMode.HYDROFOIL)
+                && (next.containsTerrain(Terrains.BRIDGE) || current
+                    .containsTerrain(Terrains.BRIDGE))) {
                 int bridgeElev;
                 if (next.containsTerrain(Terrains.BRIDGE)) {
                     bridgeElev = next.terrainLevel(Terrains.BRIDGE_ELEV);
@@ -6535,13 +6535,13 @@ public abstract class Entity extends TurnOrdered implements Transporter,
             Coords curPos, int lastElev, boolean isPavementStep) {
         PilotingRollData roll = getBasePilotingRoll(moveType);
         int bgMod = curHex.getBogDownModifier(getMovementMode(),
-                this instanceof LargeSupportTank);
+                                              this instanceof LargeSupportTank);
         if ((!lastPos.equals(curPos) || (step.getElevation() != lastElev))
                 && (bgMod != TargetRoll.AUTOMATIC_SUCCESS)
                 && (moveType != EntityMovementType.MOVE_JUMP)
                 && (step.getElevation() == 0) && !isPavementStep) {
             roll.append(new PilotingRollData(getId(), bgMod,
-                    "avoid bogging down"));
+                                             "avoid bogging down"));
             if ((this instanceof Mech) && ((Mech) this).isSuperHeavy()) {
                 roll.addModifier(1, "superheavy mech avoiding bogging down");
             }
@@ -11705,7 +11705,12 @@ public abstract class Entity extends TurnOrdered implements Transporter,
     }
 
     public boolean isAirborne() {
-        return (getAltitude() > 0)
+    	int minAltitude = 1;
+    	// This can be called during unit loading where we don't have a game (yet), so need to catch it
+    	if (null != game && null != game.getBoard() && game.getBoard().onGround()) {
+    		minAltitude = game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), position);
+    	}
+        return (getAltitude() >= minAltitude)
                || (getMovementMode() == EntityMovementMode.AERODYNE)
                || (getMovementMode() == EntityMovementMode.SPHEROID);
     }
@@ -11723,16 +11728,16 @@ public abstract class Entity extends TurnOrdered implements Transporter,
      * is the unit flying Nape of the Earth? (i.e. one elevation above ground)
      */
     public boolean isNOE() {
-
+    	final IBoard board = game.getBoard();
+    	final IHex hex = board.getHex(getPosition());
         if (!isAirborne()) {
             return false;
         }
-        if (game.getBoard().inAtmosphere()) {
-            return (1 == (getAltitude() - game.getBoard().getHex(getPosition())
-                    .ceiling(true)));
+        if (board.inAtmosphere()) {
+            return (1 == (getAltitude() - hex.ceiling(true)));
         }
-        if (game.getBoard().onGround()) {
-            return 1 == getAltitude();
+        if (board.onGround()) {
+        	return board.getAtmosphere().minAltitudeOver(hex) == getAltitude();
         }
         return false;
     }

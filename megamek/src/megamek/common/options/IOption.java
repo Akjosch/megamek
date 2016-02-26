@@ -20,6 +20,8 @@
 
 package megamek.common.options;
 
+import java.util.Vector;
+
 /**
  * Interface of the settable option. The settable option is used for game
  * options which relate to game behavior and as well as pilot options which
@@ -140,4 +142,13 @@ public interface IOption extends IBasicOption, IOptionInfo {
      */
     public abstract void clearValue();
 
+    /**
+     * CHOICE type options only: sets the Vector of predefined option strings
+     */
+    public abstract void setChoices(Vector<String> choices);
+    
+    /**
+     * CHOICE type options only: gets the Vector of predefined option string.
+     */
+    public abstract Vector<String> getChoices();
 }

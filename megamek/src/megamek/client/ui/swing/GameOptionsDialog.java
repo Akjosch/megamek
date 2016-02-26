@@ -393,6 +393,7 @@ public class GameOptionsDialog extends JDialog implements ActionListener,
     }
 
     private void addOption(JPanel groupPanel, IOption option) {
+    	if (null == groupPanel || null == option) { return; }
         DialogOptionComponent optionComp = new DialogOptionComponent(this,
                 option, true, true);
 

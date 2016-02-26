@@ -905,7 +905,7 @@ public class MoveStep implements Serializable {
             case LAND:
             case VLAND:
                 setMp(0);
-                setAltitude(0);
+                setAltitude(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), getPosition()) - 1);
                 break;
             case ACCN:
                 setVelocityN(getVelocityN() + 1);
@@ -1835,6 +1835,14 @@ public class MoveStep implements Serializable {
                     && game.getBoard().inAtmosphere() && !a.isOutControl()) {
                 IHex desth = game.getBoard().getHex(getPosition());
                 if (altitude <= desth.ceiling(true)) {
+                    return; // can't fly into a cliff face or woods (unless out
+                    // of control)
+                }
+            }
+
+            if ((type == MoveStepType.FORWARDS)
+                    && game.getBoard().onGround() && !a.isOutControl()) {
+                if (altitude < game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), getPosition())) {
                     return; // can't fly into a cliff face or woods (unless out
                     // of control)
                 }

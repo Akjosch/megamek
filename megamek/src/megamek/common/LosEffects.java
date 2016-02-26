@@ -48,6 +48,8 @@ public class LosEffects {
         public boolean attOffBoard;
         public Coords attackPos;
         public Coords targetPos;
+        public boolean attIsAero;
+        public boolean targetIsAero;
         
         /**
          * The absolute elevation of the attacker, i.e. the number of levels
@@ -419,6 +421,7 @@ public class LosEffects {
 
         final AttackInfo ai = new AttackInfo();
         ai.attackerIsMech = ae instanceof Mech;
+        ai.attIsAero = ae instanceof Aero;
         ai.attackPos = attackPos;
         ai.attackerId = ae.getId();
         ai.targetPos = targetPos;
@@ -426,6 +429,7 @@ public class LosEffects {
         if(ai.targetEntity) {
             ai.targetId = ((Entity)target).getId();
             ai.targetIsMech = target instanceof Mech;
+            ai.targetIsAero = target instanceof Aero;
         }else {
             ai.targetIsMech = false;
         }
@@ -435,11 +439,17 @@ public class LosEffects {
         ai.targetHeight = target.getHeight();
 
         int attEl = ae.relHeight() + attHex.getLevel();
+        if( game.getBoard().onGround() && ae instanceof Aero ) {
+        	attEl = ae.getAltitude();
+        }
         // for spotting, a mast mount raises our elevation by 1
         if (spotting && ae.hasWorkingMisc(MiscType.F_MAST_MOUNT, -1)) {
             attEl += 1;
         }
         int targEl = target.relHeight() + targetHex.getLevel();
+        if( game.getBoard().onGround() && target instanceof Aero ) {
+        	targEl = target.getAltitude();
+        }
 
         ai.attackAbsHeight = attEl;
         ai.targetAbsHeight = targEl;
@@ -1088,6 +1098,11 @@ public class LosEffects {
             }
         }
         
+        // Aerospace using altitude
+        if (game.getBoard().onGround() && ai.attIsAero && ai.targetIsAero) {
+        	hexEl = game.getBoard().getAtmosphere().minAltitudeOver(hex);
+        	bldgEl = 0;
+        }
         // TODO: Identify when LOS travels *above* a building's hex.
         // Alternatively, force all building hexes to be same height.
 

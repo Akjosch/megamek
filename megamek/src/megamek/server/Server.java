@@ -3396,6 +3396,7 @@ public class Server implements Runnable {
         if (!game.getOptions().booleanOption("random_basements")) {
             newBoard.setRandomBasementsOff();
         }
+        newBoard.getAtmosphere().applyOptions(game.getOptions());
         BoardUtilities.addWeatherConditions(newBoard, game
                 .getPlanetaryConditions().getWeather(), game
                                                     .getPlanetaryConditions().getWindStrength());
@@ -5979,7 +5980,7 @@ public class Server implements Runnable {
         }
         // if aero on the ground map, then only crash if elevation is zero
         else if (game.getBoard().onGround()) {
-            if (altitude <= 0) {
+            if (altitude < game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), pos)) {
                 return true;
             }
             return false;
@@ -6012,7 +6013,7 @@ public class Server implements Runnable {
             vReport.add(r);
             entity.setDoomed(true);
         } else {
-            ((Aero) entity).land();
+            ((Aero) entity).land(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), c) - 1);
         }
 
         // we might hit multiple hexes, if we're a dropship, so we do some
@@ -6473,14 +6474,14 @@ public class Server implements Runnable {
         if (md.contains(MoveStepType.TAKEOFF) && (entity instanceof Aero)) {
             Aero a = (Aero) entity;
             a.setCurrentVelocity(1);
-            a.liftOff(1);
+            Coords finalCoords = a.getPosition().translated(a.getFacing(), a.getTakeOffLength());
+            a.liftOff(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), finalCoords));
             if (entity instanceof Dropship) {
                 applyDropshipProximityDamage(md.getFinalCoords(), true,
                                              md.getFinalFacing(), entity);
             }
             checkForTakeoffDamage(a);
-            a.setPosition(a.getPosition().translated(a.getFacing(),
-                                                     a.getTakeOffLength()));
+            a.setPosition(finalCoords);
             entity.setDone(true);
             entityUpdate(entity.getId());
             return;
@@ -6491,7 +6492,7 @@ public class Server implements Runnable {
             rollTarget = a.checkVerticalTakeOff();
             if (doVerticalTakeOffCheck(entity, rollTarget)) {
                 a.setCurrentVelocity(0);
-                a.liftOff(1);
+                a.liftOff(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), md.getFinalCoords()));
                 if (entity instanceof Dropship) {
                     applyDropshipProximityDamage(md.getFinalCoords(), a);
                 }
@@ -6508,7 +6509,7 @@ public class Server implements Runnable {
                     md.getFinalVelocity(), md.getFinalCoords(),
                     md.getFinalFacing(), false);
             doAttemptLanding(entity, rollTarget);
-            a.land();
+            a.land(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), md.getFinalCoords()) - 1);
             entity.setPosition(md.getFinalCoords().translated(
                     md.getFinalFacing(), a.getLandingLength()));
             entity.setDone(true);
@@ -6525,7 +6526,7 @@ public class Server implements Runnable {
             if (entity instanceof Dropship) {
                 applyDropshipLandingDamage(md.getFinalCoords(), a);
             }
-            a.land();
+            a.land(game.getBoard().getAtmosphere().minAltitudeOver(game.getBoard(), md.getFinalCoords()) - 1);
             entity.setPosition(md.getFinalCoords());
             entity.setDone(true);
             entityUpdate(entity.getId());

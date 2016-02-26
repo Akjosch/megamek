@@ -94,6 +94,7 @@ public class CommonMenuBar extends JMenuBar implements ActionListener,
     private JCheckBoxMenuItem toggleFovHighlight;
     private JCheckBoxMenuItem toggleFovDarken;
     private JCheckBoxMenuItem toggleFiringSolutions;
+    private JCheckBoxMenuItem toggleAeroAltitude;
     private JMenuItem viewMovementEnvelope;
     private JMenuItem viewMovModEnvelope;
     private JMenuItem viewLOSSetting;
@@ -417,6 +418,14 @@ public class CommonMenuBar extends JMenuBar implements ActionListener,
         viewMovModEnvelope.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W,
                 getToolkit().getMenuShortcutKeyMask()));
         menu.add(viewMovModEnvelope);
+        toggleAeroAltitude = new JCheckBoxMenuItem(Messages
+                .getString("CommonMenuBar.viewToggleAeroAltitude")); //$NON-NLS-1$
+        toggleAeroAltitude.setToolTipText(Messages
+                .getString("CommonMenuBar.viewToggleAeroAltitudeToolTip")); //$NON-NLS-1$
+        toggleAeroAltitude.setState(GUIPreferences.getInstance().getBoolean("AeroAltitude")); //$NON-NLS-1$
+        toggleAeroAltitude.addActionListener(this);
+        toggleAeroAltitude.setActionCommand(ClientGUI.VIEW_TOGGLE_AERO_ALTITUDE);
+        menu.add(toggleAeroAltitude);
         menu.addSeparator();
         viewRoundReport = new JMenuItem(Messages
                 .getString("CommonMenuBar.viewRoundReport")); //$NON-NLS-1$
@@ -880,6 +889,7 @@ public class CommonMenuBar extends JMenuBar implements ActionListener,
             viewMiniMap.setEnabled(true);
             viewZoomIn.setEnabled(true);
             viewZoomOut.setEnabled(true);
+            toggleAeroAltitude.setEnabled(true);
         }
         // If we don't have a board we can't view the mini map.
         else {
@@ -889,6 +899,7 @@ public class CommonMenuBar extends JMenuBar implements ActionListener,
             viewMiniMap.setEnabled(false);
             viewZoomIn.setEnabled(false);
             viewZoomOut.setEnabled(false);
+            toggleAeroAltitude.setEnabled(false);
         }
 
         // If we have a unit list, and if we are in the lounge,
@@ -1401,6 +1412,8 @@ public class CommonMenuBar extends JMenuBar implements ActionListener,
             toggleIsometric.setSelected((Boolean)e.getNewValue());
         } else if (e.getName().equals(GUIPreferences.SHOW_FIELD_OF_FIRE)) {
             toggleFieldOfFire.setSelected((Boolean)e.getNewValue());
+        } else if (e.getName().equals(GUIPreferences.AERO_ALTITUDE)) {
+        	toggleAeroAltitude.setSelected((Boolean)e.getNewValue());
         }
     }
 

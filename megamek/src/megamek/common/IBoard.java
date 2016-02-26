@@ -413,4 +413,9 @@ public interface IBoard {
     public abstract void resetStoredElevation();
 
     boolean containsBridges();
+    
+    /**
+     * Get the atmospheric conditions
+     */
+    public abstract IAtmosphere getAtmosphere();
 }

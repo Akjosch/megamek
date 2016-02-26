@@ -561,7 +561,7 @@ public class MULParser {
             if (altString.length() > 0){
                 int altitude = Integer.parseInt(altString);
                 if (altitude <= 0) {
-                    a.land();
+                    a.land(0);
                 } else {
                     a.liftOff(altitude);
                 }    

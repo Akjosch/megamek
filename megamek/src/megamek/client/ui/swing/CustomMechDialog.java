@@ -1152,7 +1152,7 @@ public class CustomMechDialog extends ClientDialog implements ActionListener,
                 // not
                 // necessarily mean grounded
                 if (altitude <= 0) {
-                    a.land();
+                    a.land(0);
                 } else {
                     a.liftOff(altitude);
                 }

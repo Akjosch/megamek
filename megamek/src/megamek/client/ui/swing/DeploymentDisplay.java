@@ -504,6 +504,15 @@ public class DeploymentDisplay extends StatusBarPhaseDisplay {
             JOptionPane.showMessageDialog(clientgui.frame, msg, title,
                     JOptionPane.ERROR_MESSAGE);
             return;
+        } else if (isAero && board.onGround()
+                && (ce().getAltitude() < board.getAtmosphere().minAltitudeOver(board, moveto) - 1 /* -1 for the "landed" case */)) {
+            // Ensure aeros don't end up at lower elevation than the current hex
+            title = Messages.getString("DeploymentDisplay.alertDialog.title"); //$NON-NLS-1$
+            msg = Messages.getString("DeploymentDisplay.elevationTooLow",
+                    new Object[] { ce().getShortName(), moveto.getBoardNum() });
+            JOptionPane.showMessageDialog(clientgui.frame, msg, title,
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         } else if ((Compute.stackingViolation(game, ce().getId(), moveto) != null)
                 && (bldg == null)) {
             // check if deployed unit violates stacking

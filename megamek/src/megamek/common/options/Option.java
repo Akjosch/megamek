@@ -24,6 +24,7 @@ public class Option implements IOption, Serializable {
     private Object defaultValue;
     private Object value;
     private IOptions owner;
+    private Vector<String> choices;
 
     private transient IOptionInfo info;
 
@@ -43,8 +44,9 @@ public class Option implements IOption, Serializable {
         this(owner, name, FLOAT, new Float(defaultValue));
     }
 
-    public Option(IOptions owner, String name, Vector<String> defaultValue) {
+    public Option(IOptions owner, String name, Vector<String> choices) {
         this(owner, name, CHOICE, ""); //$NON-NLS-1$
+        this.choices = (null != choices ? choices : new Vector<String>());
     }
 
     public Option(IOptions owner, String name, int type, Object defaultValue) {
@@ -218,6 +220,23 @@ public class Option implements IOption, Serializable {
             info = owner.getOptionInfo(name);
         }
     }
+
+	@Override
+	public void setChoices(Vector<String> choices) {
+		if( type == CHOICE ) {
+			this.choices = (null != choices ? new Vector<String>(choices) : new Vector<String>());
+		} else {
+            throw new IllegalArgumentException(
+                    "Tried to set choice list on a non-choice option."); //$NON-NLS-1$
+        }
+	}
+
+	@Override
+	public Vector<String> getChoices() {
+		return choices;
+	}
+    
+    
     
     @Override
     public String toString() {

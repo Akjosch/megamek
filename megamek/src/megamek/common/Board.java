@@ -84,7 +84,8 @@ public class Board implements Serializable, IBoard {
     private int maxElevation = UNDEFINED_MAX_ELEV;
 
     private int mapType = T_GROUND;
-
+    private IAtmosphere atmosphere = new Atmosphere();
+    
     private IHex[] data;
 
     /**
@@ -1527,5 +1528,10 @@ public class Board implements Serializable, IBoard {
             }
         }
         return false;
+    }
+    
+    @Override
+    public IAtmosphere getAtmosphere() {
+    	return atmosphere;
     }
 }

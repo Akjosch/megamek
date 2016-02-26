@@ -198,6 +198,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
     // Set to TRUE to draw hexes with isometric elevation.
     private boolean drawIsometric = GUIPreferences.getInstance()
                                                   .getIsometricEnabled();
+    private boolean useAeroAltitude = false;
 
     int DROPSHDW_DIST = 20;
 
@@ -453,6 +454,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
         this.game = game;
 
         hexImageCache = new ImageCache<Coords, HexImageCacheEntry>();
+        useAeroAltitude = GUIPreferences.getInstance().getAeroAltitude() && game.getBoard().onGround() && game.getOptions().booleanOption(OptionsConstants.AAR_USE_GROUND_MAP_ALTITUDE);
 
         tileManager = new TilesetManager(this);
         ToolTipManager.sharedInstance().registerComponent(this);
@@ -1044,7 +1046,8 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                               RenderingHints.VALUE_ANTIALIAS_ON);
         }
-
+        useAeroAltitude = guip.getAeroAltitude() && game.getBoard().onGround() && game.getOptions().booleanOption(OptionsConstants.AAR_USE_GROUND_MAP_ALTITUDE);
+        
         if (!isTileImagesLoaded()) {
             g.drawString(Messages.getString("BoardView1.loadingImages"), 20, 50); //$NON-NLS-1$
             if (!tileManager.isStarted()) {
@@ -1961,6 +1964,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             boardGraph.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                         RenderingHints.VALUE_ANTIALIAS_ON);
         }
+        useAeroAltitude = GUIPreferences.getInstance().getAeroAltitude() && game.getBoard().onGround() && game.getOptions().booleanOption(OptionsConstants.AAR_USE_GROUND_MAP_ALTITUDE);
         drawHexes(boardGraph, new Rectangle(boardSize), true);
         boardGraph.dispose();
         return (BufferedImage) entireBoard;
@@ -1986,14 +1990,14 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             // When using isometric rendering, hexes within a given row
             // must be drawn from lowest to highest elevation.
             IBoard board = game.getBoard();
-            final int minElev = board.getMinElevation();
-            final int maxElev = board.getMaxElevation();
+            final int minElev = useAeroAltitude ? 0 : board.getMinElevation();
+            final int maxElev = useAeroAltitude ? 10 : board.getMaxElevation();
             for (int i = 0; i < drawHeight; i++) {
                 for (int x = minElev; x <= maxElev; x++) {
                     for (int j = 0; j < drawWidth; j++) {
                         Coords c = new Coords(j + drawX, i + drawY);
                         IHex hex = board.getHex(c);
-                        if ((hex != null) && (hex.getLevel() == x)) {
+                        if ((hex != null) && ((useAeroAltitude ? board.getAtmosphere().minAltitudeOver(hex) - 1 : hex.getLevel()) == x)) {
                             drawHex(c, g, saveBoardImage);
                             if (GUIPreferences.getInstance()
                                     .getShowFieldOfFire()) {
@@ -2062,7 +2066,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             return;
         }
 
-        int level = hex.getLevel();
+        int level = useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(hex) - 1 : hex.getLevel();
         int depth = hex.depth(false);
 
         ITerrain basement = hex.getTerrain(Terrains.BLDG_BASEMENT_TYPE);
@@ -2104,7 +2108,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
                 if (adjHex == null) {
                     continue;
                 }
-                int levelDiff = Math.abs(level - adjHex.getLevel());
+                int levelDiff = Math.abs(level - (useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(adjHex) - 1 : adjHex.getLevel()));
                 if (levelDiff > largestLevelDiff) {
                     largestLevelDiff = levelDiff;
                 }
@@ -2519,6 +2523,11 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
 
         // We need to adjust the height based on several cases
         int elevOffset = oHex.terrainLevel(Terrains.BRIDGE_ELEV);
+        // Negative elevation drops the hex down, so we need to compensate
+        int level = useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(oHex) - 1 : oHex.getLevel();
+        if (level < 0) {
+            elevOffset += -1 * level;
+        }
 
         int orthX = oHexLoc.x;
         int orthY = oHexLoc.y - (int) (HEX_ELEV * scale * elevOffset);
@@ -2579,7 +2588,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             fudge = 1;
         }
 
-        final int elev = src.getLevel();
+        final int elev = useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(src) - 1 : src.getLevel();
         // If the Destination is null, draw the complete elevation side.
         if ((dest == null) && (elev > 0)
             && ((dir == 2) || (dir == 3) || (dir == 4))) {
@@ -2588,8 +2597,8 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             int height = elev;
             IHex southHex = game.getBoard().getHexInDir(c, 3);
             if ((dir != 3) && (southHex != null)
-                && (elev > southHex.getLevel())) {
-                height = elev - southHex.getLevel();
+                && (elev > (useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(southHex) - 1 : southHex.getLevel()))) {
+                height = elev - (useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(southHex) - 1 : southHex.getLevel());
             }
             int scaledHeight = (int) (HEX_ELEV * scale * height);
 
@@ -2609,7 +2618,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             return;
         }
 
-        int delta = elev - dest.getLevel();
+        int delta = elev - (useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(dest) - 1 : dest.getLevel());
         // Don't draw the elevation if there is no exposed edge for the player
         // to see.
         if ((delta == 0)
@@ -2672,14 +2681,14 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
     private final boolean drawElevationLine(Coords src, int direction) {
         final IHex srcHex = game.getBoard().getHex(src);
         final IHex destHex = game.getBoard().getHexInDir(src, direction);
-        if ((destHex == null) && (srcHex.getLevel() != 0)) {
+        if ((destHex == null) && ((useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(srcHex) - 1 : srcHex.getLevel()) != 0)) {
             return true;
         } else if (destHex == null) {
             return false;
-        } else if (srcHex.getLevel() != destHex.getLevel()) {
+        } else if ((useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(srcHex) : srcHex.getLevel()) != (useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(destHex) : destHex.getLevel())) {
             return true;
         } else {
-            return (srcHex.floor() != destHex.floor());
+            return (!useAeroAltitude && srcHex.floor() != destHex.floor());
         }
     }
     
@@ -2694,12 +2703,13 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
         // When at the board edge, create a shadow in hexes of level < 0
         if (destHex == null)
         {
-            if (srcHex.getLevel() >= 0) return null; 
+            if (srcHex.getLevel() >= 0 || useAeroAltitude) return null; 
         }
         else
         {
             // no shadow area when the current hex is not lower than the next hex in direction
             if (srcHex.getLevel() >= destHex.getLevel()) return null;
+        	if (useAeroAltitude && game.getBoard().getAtmosphere().minAltitudeOver(srcHex) >= game.getBoard().getAtmosphere().minAltitudeOver(destHex)) return null;
         }
 
         return(AffineTransform.getScaleInstance(scale, scale).createTransformedShape(
@@ -2716,7 +2726,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
         
         if (destHex == null) return null;  
         
-        int ldiff = destHex.getLevel()-srcHex.getLevel();
+        int ldiff = useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(destHex) - game.getBoard().getAtmosphere().minAltitudeOver(srcHex) : destHex.getLevel() - srcHex.getLevel();
         // the shadow strength depends on the level difference,
         // but only to a maximum difference of 3 levels
         ldiff = Math.min(ldiff*5,15);
@@ -2745,7 +2755,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
 
         IHex hex = game.getBoard().getHex(x, y);
         if ((hex != null) && useIsometric()) {
-            int level = hex.getLevel();
+            int level = useAeroAltitude ? game.getBoard().getAtmosphere().minAltitudeOver(hex) - 1 : hex.getLevel();
             if (level != 0) {
                 elevationAdjust = level * HEX_ELEV * scale * -1.0f;
             }
@@ -2865,7 +2875,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
     }
 
     public void redrawMovingEntity(Entity entity, Coords position, int facing,
-            int elevation) {
+                                   int elevation) {
         Integer entityId = new Integer(entity.getId());
         List<Integer> spriteKey = getIdAndLoc(entityId, -1);
         EntitySprite sprite = entitySpriteIds.get(spriteKey);
@@ -3153,7 +3163,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
                     newIsometricWrecks.add(iws);
                 } else {
                     for (int secondaryPos : entity.getSecondaryPositions()
-                            .keySet()) {
+                                                  .keySet()) {
                         ws = new WreckSprite(this, entity, secondaryPos);
                         newWrecks.add(ws);
                         iws = new IsometricWreckSprite(this, entity,
@@ -4093,7 +4103,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
 
                         if (ge != null) {
                             redrawMovingEntity(move.entity, loc.getCoords(),
-                                    loc.getFacing(), loc.getElevation());
+                                               loc.getFacing(), loc.getElevation());
                         }
                         move.path.remove(0);
                     } else {
@@ -4115,7 +4125,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
                     movingEntitySprites.clear();
                     ghostEntitySprites.clear();
                     processBoardViewEvent(new BoardViewEvent(this,
-                            BoardViewEvent.FINISHED_MOVING_UNITS));
+                                                             BoardViewEvent.FINISHED_MOVING_UNITS));
                 }
             }
         }
@@ -4709,7 +4719,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             int secondaryIdx = -1;
             if (e.getSecondaryPositions().size() > 0) {
                 secondaryIdx = 0;
-            }
+        }
             EntitySprite eSprite = entitySpriteIds.get(getIdAndLoc(e.getId(),
                     secondaryIdx));
             if (eSprite != null) {

@@ -1896,7 +1896,9 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
         }
 
         if (ce instanceof Aero) {
-            if (ce.isAirborne() && (cmd.getFinalAltitude() == 1)) {
+        	IBoard board = clientgui.getClient().getGame().getBoard();
+        	int landAltitude = board.getAtmosphere().minAltitudeOver(board, ce.getPosition());
+            if (ce.isAirborne() && (cmd.getFinalAltitude() == landAltitude)) {
                 setLandEnabled(((Aero) ce).canLandHorizontally());
                 setVLandEnabled(((Aero) ce).canLandVertically());
             }
@@ -3956,7 +3958,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
             }
             ready();
         } else if (actionCmd.equals(MoveCommand.MOVE_EJECT.getCmd())) {
-            if (ce instanceof Tank) {
+            if (ce instanceof Tank || ce instanceof Aero) {
                 if (clientgui
                         .doYesNoDialog(
                                 Messages.getString("MovementDisplay.AbandonDialog.title"),
@@ -4136,7 +4138,11 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
             int ceil = board.getHex(pos).ceiling(board.inAtmosphere());
             // On the ground map, Aeros ignore hex elevations
             if (board.onGround()) {
-                ceil = 0;
+            	if (clientgui.getClient().getGame().getOptions().booleanOption(OptionsConstants.AAR_USE_GROUND_MAP_ALTITUDE)) {
+                    ceil = board.getAtmosphere().minAltitudeOver(board, pos) - 1;
+            	} else {
+            		ceil = 0;
+            	}
             }
             choiceDialog.checkPerformability(vel, altitude, ceil, a.isVSTOL(),
                     distance, clientgui.getClient().getGame(), cmd);

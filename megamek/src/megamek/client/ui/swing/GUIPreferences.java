@@ -101,6 +101,7 @@ public class GUIPreferences extends PreferenceStoreProxy {
     public static final String GAME_OPTIONS_SIZE_HEIGHT = "GameOptionsSizeHeight";
     public static final String GAME_OPTIONS_SIZE_WIDTH = "GameOptionsSizeWidth";
     public static final String FIRING_SOLUTIONS = "FiringSolutions";
+    public static final String AERO_ALTITUDE = "AeroAltitude";
     public static final String FOV_HIGHLIGHT = "FovHighlight";
     public static final String FOV_HIGHLIGHT_ALPHA = "FovHighlightAlpha";
     //Rings' sizes (measured in distance to center) separated by whitespace.
@@ -265,6 +266,7 @@ public class GUIPreferences extends PreferenceStoreProxy {
         store.setDefault(GAME_OPTIONS_SIZE_HEIGHT,400);
         store.setDefault(GAME_OPTIONS_SIZE_WIDTH,400);
         store.setDefault(FIRING_SOLUTIONS,true);
+        store.setDefault(AERO_ALTITUDE,false);
         store.setDefault(FOV_HIGHLIGHT,false);
         store.setDefault(FOV_HIGHLIGHT_ALPHA, 40);
         store.setDefault(FOV_DARKEN,true);
@@ -417,6 +419,10 @@ public class GUIPreferences extends PreferenceStoreProxy {
 
     public boolean getFiringSolutions() {
         return store.getBoolean(FIRING_SOLUTIONS);
+    }
+
+    public boolean getAeroAltitude() {
+        return store.getBoolean(AERO_ALTITUDE);
     }
 
     public boolean getFovHighlight() {
@@ -783,6 +789,10 @@ public class GUIPreferences extends PreferenceStoreProxy {
 
     public void setFiringSolutions(boolean state){
         store.setValue(FIRING_SOLUTIONS,state);
+    }
+
+    public void setAeroAltitude(boolean state){
+        store.setValue(AERO_ALTITUDE,state);
     }
 
     public void setFovHighlight(boolean state){

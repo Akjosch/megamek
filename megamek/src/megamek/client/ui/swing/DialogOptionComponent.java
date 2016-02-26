@@ -63,7 +63,7 @@ public class DialogOptionComponent extends JPanel implements
         this(parent, option, true);
     }
 
-    public DialogOptionComponent(DialogOptionListener parent, IOption option,
+	public DialogOptionComponent(DialogOptionListener parent, IOption option,
             boolean editable) {
         this(parent, option, editable, false);
     }
@@ -111,6 +111,9 @@ public class DialogOptionComponent extends JPanel implements
                 break;
             case IOption.CHOICE:
                 choice = new JComboBox<String>();
+                for (String choiceString : option.getChoices()) {
+                	choice.addItem(choiceString);
+                }
                 label = new JLabel(option.getDisplayableName());
                 label.setToolTipText(convertToHtml(option.getDescription()));
                 if (!editable) {

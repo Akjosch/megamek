@@ -3882,9 +3882,9 @@ public class Aero extends Entity {
         }
     }
 
-    public void land() {
+    public void land(int atAltitude) {
         setMovementMode(EntityMovementMode.WHEELED);
-        setAltitude(0);
+        setAltitude(atAltitude);
         setElevation(0);
         setCurrentVelocity(0);
         setNextVelocity(0);

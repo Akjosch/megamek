@@ -264,6 +264,7 @@ public class GameOptions extends AbstractOptions {
         addOption(advAeroRules, "aa_move_mod", false); //$NON-NLS-1$
         addOption(advAeroRules, "allow_large_squadrons", false); //$NON-NLS-1$
         addOption(advAeroRules, "single_no_cap", false); //$NON-NLS-1$
+        addOption(advAeroRules, OptionsConstants.AAR_USE_GROUND_MAP_ALTITUDE, false); //$NON-NLS-1$
 
         IBasicOptionGroup initiative = addGroup("initiative"); //$NON-NLS-1$
         addOption(initiative, "inf_move_even", false); //$NON-NLS-1$
