@@ -1317,6 +1317,11 @@ public class Board implements Serializable, IBoard {
 
         // Restore bldgByCoords from buildings.
         createBldgByCoords();
+        
+        // Loading (old) boards with no atmosphere defined: Use the default one
+        if (null == atmosphere) {
+            atmosphere = new Atmosphere();
+        }
     }
 
     /*
