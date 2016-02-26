@@ -6,9 +6,9 @@ import java.io.File;
 
 /** Default AWT image loader, should come last in list */
 class AWTImageLoader extends ImageLoader {
-	@Override
-	public Image loadImage(File file, Toolkit toolkit) {
-		return toolkit.getImage(file.toString());
-	}
-	
+    @Override
+    public Image loadImage(File file, Toolkit toolkit) {
+        return toolkit.getImage(file.toString());
+    }
+    
 }

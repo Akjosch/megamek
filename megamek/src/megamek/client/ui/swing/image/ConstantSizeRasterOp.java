@@ -10,10 +10,10 @@ import java.awt.image.WritableRaster;
 
 /** Abstract class for RasterOp instances which don't change the raster size */
 public abstract class ConstantSizeRasterOp implements RasterOp {
-	@Override
-	public WritableRaster filter(Raster src, WritableRaster dest) {
+    @Override
+    public WritableRaster filter(Raster src, WritableRaster dest) {
         if (null == src) {
-        	throw new NullPointerException("src raster is null");
+            throw new NullPointerException("src raster is null");
         }
         if (src == dest) {
             throw new IllegalArgumentException("src raster cannot be the same as the dest raster");
@@ -22,35 +22,35 @@ public abstract class ConstantSizeRasterOp implements RasterOp {
             dest = createCompatibleDestRaster(src);
         }
         if (src.getHeight() != dest.getHeight() || src.getWidth() != dest.getWidth()) {
-        	throw new IllegalArgumentException("Width or height of rasters do not match");
+            throw new IllegalArgumentException("Width or height of rasters do not match");
         }
         if (src.getNumBands() != dest.getNumBands()) {
             throw new ImagingOpException("Different number of bands in src and dest rasters");
         }
         return dest;
-	}
-	
-	@Override
-	public Rectangle2D getBounds2D(Raster src) {
-		return src.getBounds();
-	}
+    }
+    
+    @Override
+    public Rectangle2D getBounds2D(Raster src) {
+        return src.getBounds();
+    }
 
-	@Override
-	public WritableRaster createCompatibleDestRaster(Raster src) {
-		return src.createCompatibleWritableRaster();
-	}
+    @Override
+    public WritableRaster createCompatibleDestRaster(Raster src) {
+        return src.createCompatibleWritableRaster();
+    }
 
-	@Override
-	public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
-		if (dstPt == null) {
-		       return (Point2D)srcPt.clone();
-		}
-		dstPt.setLocation(srcPt);
-		return dstPt;
-	}
+    @Override
+    public Point2D getPoint2D(Point2D srcPt, Point2D dstPt) {
+        if (dstPt == null) {
+               return (Point2D)srcPt.clone();
+        }
+        dstPt.setLocation(srcPt);
+        return dstPt;
+    }
 
-	@Override
-	public RenderingHints getRenderingHints() {
-		return null;
-	}
+    @Override
+    public RenderingHints getRenderingHints() {
+        return null;
+    }
 }
