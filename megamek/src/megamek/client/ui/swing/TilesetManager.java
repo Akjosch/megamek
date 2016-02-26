@@ -581,14 +581,14 @@ public class TilesetManager implements IPreferenceChangeListener, ITilesetManage
      * A class to handle the image permutations for an entity
      */
     private class EntityImage {
-        private Image base;
-        private Image wreck;
-        private Image icon;
-        int tint;
-        private Image camo;
-        private Image[] facings = new Image[6];
-        private Image[] wreckFacings = new Image[6];
-        private Component parent;
+        protected Image base;
+        protected Image wreck;
+        protected Image icon;
+        protected int tint;
+        protected Image camo;
+        protected Image[] facings = new Image[6];
+        protected Image[] wreckFacings = new Image[6];
+        protected Component parent;
 
         protected static final int IMG_WIDTH = 84;
         protected static final int IMG_HEIGHT = 72;
