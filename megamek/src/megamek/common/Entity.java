@@ -1714,7 +1714,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
                 if (game.getBoard().inAtmosphere()) {
                     minAlt = hex.ceiling(true) + 1;
                 } else if (game.getBoard().onGround() && isAirborne()) {
-                    minAlt = 1;
+                    minAlt = game.getBoard().getAtmosphere().minAltitudeOver(hex);
                 }
                 // if sensors are damaged then, one higher
                 if ((this instanceof Aero)
@@ -1773,6 +1773,9 @@ public abstract class Entity extends TurnOrdered implements Transporter,
                 if (!game.getBoard().inSpace()) {
                     assumedAlt = assumedElevation;
                     maxAlt = 10;
+                    if (game.getBoard().onGround()) {
+                        maxAlt = game.getBoard().getAtmosphere().maxAltitude();
+                    }
                 }
                 break;
             case SUBMARINE:
