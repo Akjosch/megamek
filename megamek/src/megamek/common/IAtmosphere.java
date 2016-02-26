@@ -24,27 +24,38 @@ import megamek.common.options.IOptions;
  * This class gets added to board instances, to make sure multi-board games can have different atmospheres.
  */
 public interface IAtmosphere {
-	/**
-	 * Apply the options to the atmosphere. Only apply options actually in the argument;
-	 * missing options have their values unchanged.
-	 */
-	public abstract void applyOptions(IOptions options);
+    /**
+     * Apply the options to the atmosphere. Only apply options actually in the argument;
+     * missing options have their values unchanged.
+     */
+    public abstract void applyOptions(IOptions options);
 
-	/**
-	 * Reset the options to their defaults
-	 */
-	public abstract void resetOptions();
+    /**
+     * Reset the options to their defaults
+     */
+    public abstract void resetOptions();
 
-	/**
-	 * @return the highest altitude (Aerospace elevation) that features in this
-	 *         position over the board extend to.
-	 */
-	public abstract int minAltitudeOver(IBoard board, Coords pos);
+    /**
+     * Lowest flight-capable altitude. Typically 1.
+     */
+    public abstract int minAltitude();
+    
+    /**
+     * Highest flight-capable altitude; units raising above this altitude end up outside the
+     * corresponding board and in the high-altitude board if available.
+     */
+    public abstract int maxAltitude();
+    
+    /**
+     * @return the highest altitude (Aerospace elevation) that features in this
+     *         position over the board extend to.
+     */
+    public abstract int minAltitudeOver(IBoard board, Coords pos);
 
-	/**
-	 * @return the highest altitude (Aerospace elevation) that features in this
-	 *         hex extend to.
-	 */
-	public abstract int minAltitudeOver(IHex hex);
+    /**
+     * @return the highest altitude (Aerospace elevation) that features in this
+     *         hex extend to.
+     */
+    public abstract int minAltitudeOver(IHex hex);
 
 }

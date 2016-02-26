@@ -1990,8 +1990,8 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             // When using isometric rendering, hexes within a given row
             // must be drawn from lowest to highest elevation.
             IBoard board = game.getBoard();
-            final int minElev = useAeroAltitude ? 0 : board.getMinElevation();
-            final int maxElev = useAeroAltitude ? 10 : board.getMaxElevation();
+            final int minElev = useAeroAltitude ? board.getAtmosphere().minAltitude() - 1 : board.getMinElevation();
+            final int maxElev = useAeroAltitude ? board.getAtmosphere().maxAltitude() : board.getMaxElevation();
             for (int i = 0; i < drawHeight; i++) {
                 for (int x = minElev; x <= maxElev; x++) {
                     for (int j = 0; j < drawWidth; j++) {
