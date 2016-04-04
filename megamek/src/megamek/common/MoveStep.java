@@ -581,7 +581,7 @@ public class MoveStep implements Serializable {
         final boolean isInfantry = entity instanceof Infantry;
         boolean isFieldArtillery = (entity instanceof Infantry)
                 && ((Infantry) entity).hasActiveFieldArtillery();
-        MoveStep prev = path.getSecondLastStep();
+        MoveStep prev = (path.length() > 1) ? path.getSecondLastStep() : null;
         copy(game, entity, prev);
 
         // Is this the first step?
