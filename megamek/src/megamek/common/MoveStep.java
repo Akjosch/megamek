@@ -25,6 +25,7 @@ package megamek.common;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -38,6 +39,85 @@ import megamek.common.options.OptionsConstants;
  */
 public class MoveStep implements Serializable {
     private static final long serialVersionUID = -6075640793056182286L;
+    
+    /** Check if the first type is one of the following list, and throw an exception if not */
+    private static void ensureType(MoveStepType type, MoveStepType ... validTypes) {
+        boolean valid = false;
+        for(MoveStepType testType : validTypes) {
+            if(type == testType) {
+                valid = true;
+                break;
+            };
+        }
+        if(!valid) {
+            throw new IllegalArgumentException(String.format("%s is not a valid movement type", type)); //$NON-NLS-1$
+        }
+    }
+    
+    public static MoveStep newUnload(Targetable target, Coords pos) {
+        MoveStep result = new MoveStep(MoveStepType.UNLOAD);
+        result.targetId = target.getTargetId();
+        result.targetType = target.getTargetType();
+        result.targetPos = pos;
+        return result;
+    }
+
+    public static MoveStep newTargeted(MoveStepType type, Targetable target) {
+        ensureType(type, MoveStepType.MOUNT, MoveStepType.UNLOAD, MoveStepType.DFA, MoveStepType.CHARGE);
+        MoveStep result = new MoveStep(type);
+        result.targetId = target.getTargetId();
+        result.targetType = target.getTargetType();
+        return result;
+    }
+
+    public static MoveStep newLaunch(MoveStepType type, TreeMap<Integer, Vector<Integer>> targets) {
+        ensureType(type, MoveStepType.LAUNCH, MoveStepType.UNDOCK, MoveStepType.DROP);
+        MoveStep result = new MoveStep(type);
+        result.launched = new TreeMap<>(targets);
+        return result;
+    }
+
+    public static MoveStep newManeuver(int manType) {
+        MoveStep result = new MoveStep(MoveStepType.MANEUVER);
+        result.maneuverType = manType;
+        return result;
+    }
+
+    public static MoveStep newManeuver(MoveStepType type) {
+        ensureType(type, MoveStepType.ACC, MoveStepType.DEC, MoveStepType.UP, MoveStepType.DOWN,
+            MoveStepType.FORWARDS, MoveStepType.LATERAL_LEFT, MoveStepType.LATERAL_RIGHT,
+            MoveStepType.TURN_LEFT, MoveStepType.TURN_RIGHT, MoveStepType.LOOP);
+        MoveStep result = new MoveStep(type);
+        result.maneuver = true;
+        result.noCost = true;
+        return result;
+    }
+
+    public static MoveStep newClearMinefield(Minefield mf) {
+        MoveStep result = new MoveStep(MoveStepType.CLEAR_MINEFIELD);
+        result.mf = Objects.requireNonNull(mf);
+        return result;
+    }
+
+    public static MoveStep newFreeAction(MoveStepType type) {
+        MoveStep result = new MoveStep(type);
+        result.noCost = true;
+        return result;
+    }
+
+    public static MoveStep newRecovery(MoveStepType type, int recovery) {
+        ensureType(type, MoveStepType.RECOVER, MoveStepType.JOIN);
+        MoveStep result = new MoveStep(type);
+        result.recoveryUnit = recovery;
+        return result;
+    }
+
+    public static MoveStep newMineLaying(int mineToLay) {
+        MoveStep result = new MoveStep(MoveStepType.LAY_MINE);
+        result.mineToLay = mineToLay;
+        return result;
+    }
+
     private MoveStepType type = MoveStepType.NONE;
     private int targetId = Entity.NONE;
     private int targetType = Targetable.TYPE_ENTITY;
@@ -183,6 +263,9 @@ public class MoveStep implements Serializable {
         // and state of the entity and board
     }
 
+    private MoveStep(MoveStepType type) {
+        this(null, type);
+    }
 
     /**
      * Create a step of the given type.
@@ -204,115 +287,6 @@ public class MoveStep implements Serializable {
         }
     }
 
-    /**
-     * Create a step with the given target and a position for that target
-     *
-     * @param type   - should match one of the MovePath constants, but this is not
-     *               currently checked.
-     * @param target - the <code>Targetable</code> that is the target of this step.
-     *               For example, the enemy being charged.
-     * @param pos    = the <code>Coords</code> for the target position.
-     */
-    public MoveStep(MovePath path, MoveStepType type, Targetable target,
-                    Coords pos) {
-        this(path, type);
-        targetId = target.getTargetId();
-        targetType = target.getTargetType();
-        targetPos = pos;
-        if ((type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
-                || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK)) {
-            hasEverUnloaded = true;
-        } else {
-            hasEverUnloaded = false;
-        }
-    }
-
-    /**
-     * Create a step with the given target.
-     *
-     * @param type   - should match one of the MovePath constants, but this is not
-     *               currently checked.
-     * @param target - the <code>Targetable</code> that is the target of this step.
-     *               For example, the enemy being charged.
-     */
-    public MoveStep(MovePath path, MoveStepType type, Targetable target) {
-        this(path, type);
-        targetId = target.getTargetId();
-        targetType = target.getTargetType();
-        if ((type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
-                || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK)) {
-            hasEverUnloaded = true;
-        } else {
-            hasEverUnloaded = false;
-        }
-    }
-
-    /**
-     * Create a step with the given mine to lay.
-     *
-     * @param path
-     * @param type      - should match one of the MovePath constants, but this is not
-     *                  currently checked.
-     * @param mineToLay - the <code>int</code> that is the id of the mine that should
-     *                  be laid in this step.
-     */
-    public MoveStep(MovePath path, MoveStepType type, int mineToLay) {
-        this(path, type);
-        this.mineToLay = mineToLay;
-    }
-
-    /**
-     * Create a step with the units to launch or drop.
-     *
-     * @param path
-     * @param type    - should match one of the MovePath constants, but this is not
-     *                currently checked.
-     * @param targets - vector of integers identifying the entities to launch
-     */
-    public MoveStep(MovePath path, MoveStepType type,
-                    TreeMap<Integer, Vector<Integer>> targets) {
-        this(path, type);
-        launched = targets;
-        if ((type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
-                || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK)) {
-            hasEverUnloaded = true;
-        } else {
-            hasEverUnloaded = false;
-        }
-    }
-
-    public MoveStep(MovePath path, MoveStepType type, int recovery,
-                    int mineToLay) {
-        this(path, type);
-        recoveryUnit = recovery;
-        this.mineToLay = mineToLay;
-    }
-
-    public MoveStep(MovePath path, MoveStepType type, boolean noCost) {
-        this(path, type);
-        this.noCost = noCost;
-    }
-
-    public MoveStep(MovePath path, MoveStepType type, boolean noCost,
-                    boolean isManeuver) {
-        this(path, type);
-        this.noCost = noCost;
-        maneuver = isManeuver;
-    }
-
-    public MoveStep(MovePath path, MoveStepType type, int recovery,
-                    int mineToLay, int manType) {
-        this(path, type);
-        recoveryUnit = recovery;
-        this.mineToLay = mineToLay;
-        maneuverType = manType;
-    }
-
-    public MoveStep(MovePath path, MoveStepType type, Minefield mf) {
-        this(path, type);
-        this.mf = mf;
-    }
-    
     @Override
     public String toString() {
         return type.text;

@@ -570,7 +570,7 @@ public class SharedUtility {
                 // since launches have to be the last step
                 MoveStep lastStep = oldmd.getLastStep();
                 if (lastStep.getType() == MoveStepType.LAUNCH) {
-                    md.addStep(lastStep.getType(), lastStep.getLaunched());
+                    md.addLaunchStep(lastStep.getType(), lastStep.getLaunched());
                 }
             }
             // check to see if old movement path contained an undocking
@@ -578,7 +578,7 @@ public class SharedUtility {
                 // since launches have to be the last step
                 MoveStep lastStep = oldmd.getLastStep();
                 if (lastStep.getType() == MoveStepType.UNDOCK) {
-                    md.addStep(lastStep.getType(), lastStep.getLaunched());
+                    md.addLaunchStep(lastStep.getType(), lastStep.getLaunched());
                 }
             }
         }
@@ -691,15 +691,15 @@ public class SharedUtility {
 
         // do I now need to add on the last step again?
         if (!leftMap && (lastStep != null) && (lastStep.getType() == MoveStepType.LAUNCH)) {
-            md.addStep(MoveStepType.LAUNCH, lastStep.getLaunched());
+            md.addLaunchStep(MoveStepType.LAUNCH, lastStep.getLaunched());
         }
         
         if (!leftMap && (lastStep != null) && (lastStep.getType() == MoveStepType.UNDOCK)) {
-            md.addStep(MoveStepType.UNDOCK, lastStep.getLaunched());
+            md.addLaunchStep(MoveStepType.UNDOCK, lastStep.getLaunched());
         }
 
         if (!leftMap && (lastStep != null) && (lastStep.getType() == MoveStepType.RECOVER)) {
-            md.addStep(MoveStepType.RECOVER, lastStep.getRecoveryUnit(), -1);
+            md.addRecoveryStep(MoveStepType.RECOVER, lastStep.getRecoveryUnit());
         }
 
         return md;

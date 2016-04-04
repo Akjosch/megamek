@@ -282,9 +282,9 @@ public class MoveOption extends MovePath {
                 isPhysical = true;
                 removeLastStep();
                 if (isJumping()) {
-                    addStep(MoveStepType.DFA, en);
+                    addTargetStep(MoveStepType.DFA, en);
                 } else {
-                    addStep(MoveStepType.CHARGE, en);
+                    addTargetStep(MoveStepType.CHARGE, en);
                 }
                 return true;
             }

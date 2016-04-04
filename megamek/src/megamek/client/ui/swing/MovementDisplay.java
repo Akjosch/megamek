@@ -1438,16 +1438,16 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
         } else if (gear == GEAR_RAM) {
             cmd.findPathTo(dest, MoveStepType.FORWARDS);
         } else if (gear == GEAR_IMMEL) {
-            cmd.addStep(MoveStepType.UP, true, true);
-            cmd.addStep(MoveStepType.UP, true, true);
-            cmd.addStep(MoveStepType.DEC, true, true);
-            cmd.addStep(MoveStepType.DEC, true, true);
+            cmd.addManeuverStep(MoveStepType.UP);
+            cmd.addManeuverStep(MoveStepType.UP);
+            cmd.addManeuverStep(MoveStepType.DEC);
+            cmd.addManeuverStep(MoveStepType.DEC);
             cmd.rotatePathfinder(cmd.getFinalCoords().direction(dest), true);
             gear = GEAR_LAND;
         } else if (gear == GEAR_SPLIT_S) {
-            cmd.addStep(MoveStepType.DOWN, true, true);
-            cmd.addStep(MoveStepType.DOWN, true, true);
-            cmd.addStep(MoveStepType.ACC, true, true);
+            cmd.addManeuverStep(MoveStepType.DOWN);
+            cmd.addManeuverStep(MoveStepType.DOWN);
+            cmd.addManeuverStep(MoveStepType.ACC);
             cmd.rotatePathfinder(cmd.getFinalCoords().direction(dest), true);
             gear = GEAR_LAND;
         }
@@ -3534,19 +3534,19 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
      * redraw the movement data
      */
     private boolean addManeuver(int type) {
-        cmd.addManeuver(type);
+        cmd.addManeuverStep(type);
         switch (type) {
             case (ManeuverType.MAN_HAMMERHEAD):
                 // Don't consider a maneuver, so it doesn't get a free turns
-                cmd.addStep(MoveStepType.YAW, true, false);
+                cmd.addFreeStep(MoveStepType.YAW);
                 return true;
             case (ManeuverType.MAN_HALF_ROLL):
                 // Don't consider a maneuver, so it doesn't get a free turns
-                cmd.addStep(MoveStepType.ROLL, true, false);
+                cmd.addFreeStep(MoveStepType.ROLL);
                 return true;
             case (ManeuverType.MAN_BARREL_ROLL):
                 // Don't consider a maneuver, so it doesn't get a free turns
-                cmd.addStep(MoveStepType.DEC, true, false);
+                cmd.addFreeStep(MoveStepType.DEC);
                 return true;
             case (ManeuverType.MAN_IMMELMAN):
                 gear = MovementDisplay.GEAR_IMMEL;
@@ -3565,7 +3565,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                     vel = last.getVelocityLeft();
                 }
                 while (vel > 0) {
-                    cmd.addStep(MoveStepType.DEC, true, true);
+                    cmd.addManeuverStep(MoveStepType.DEC);
                     vel--;
                 }
                 cmd.addStep(MoveStepType.UP);
@@ -3576,13 +3576,13 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                 // See Total Warfare pg 85
                 if (clientgui.getClient().getGame().getBoard().getType() == Board.T_GROUND) {
                     for (int i = 0; i < 8; i++) {
-                        cmd.addStep(MoveStepType.LATERAL_LEFT, true, true);
+                        cmd.addManeuverStep(MoveStepType.LATERAL_LEFT);
                     }
                     for (int i = 0; i < 8; i++) {
-                        cmd.addStep(MoveStepType.FORWARDS, true, true);
+                        cmd.addManeuverStep(MoveStepType.FORWARDS);
                     }
                 } else {
-                    cmd.addStep(MoveStepType.LATERAL_LEFT, true, true);
+                    cmd.addManeuverStep(MoveStepType.LATERAL_LEFT);
                 }
                 return true;
             case (ManeuverType.MAN_SIDE_SLIP_RIGHT):
@@ -3591,17 +3591,17 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                 // See Total Warfare pg 85
                 if (clientgui.getClient().getGame().getBoard().getType() == Board.T_GROUND) {
                     for (int i = 0; i < 8; i++) {
-                        cmd.addStep(MoveStepType.LATERAL_RIGHT, true, true);
+                        cmd.addManeuverStep(MoveStepType.LATERAL_RIGHT);
                     }
                     for (int i = 0; i < 8; i++) {
-                        cmd.addStep(MoveStepType.FORWARDS, true, true);
+                        cmd.addManeuverStep(MoveStepType.FORWARDS);
                     }
                 } else {
-                    cmd.addStep(MoveStepType.LATERAL_RIGHT, true, true);
+                    cmd.addManeuverStep(MoveStepType.LATERAL_RIGHT);
                 }
                 return true;
             case (ManeuverType.MAN_LOOP):
-                cmd.addStep(MoveStepType.LOOP, true, true);
+                cmd.addManeuverStep(MoveStepType.LOOP);
                 return true;
             default:
                 return false;
@@ -3951,7 +3951,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                     new Object[] {
                     new Integer(clear), new Integer(boom) });
             if ((null != mf) && clientgui.doYesNoDialog(title, msg)) {
-                cmd.addStep(MoveStepType.CLEAR_MINEFIELD, mf);
+                cmd.addClearMinefieldStep(mf);
                 ready();
             }
         } else if (actionCmd.equals(MoveCommand.MOVE_CHARGE.getCmd())) {
@@ -4079,7 +4079,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
         } else if (actionCmd.equals(MoveCommand.MOVE_MOUNT.getCmd())) {
             Entity other = getMountedUnit();
             if (other != null) {
-                cmd.addStep(MoveStepType.MOUNT, other);
+                cmd.addTargetStep(MoveStepType.MOUNT, other);
                 ready();
             }
         } else if (actionCmd.equals(MoveCommand.MOVE_UNLOAD.getCmd())) {
@@ -4092,14 +4092,14 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                         // set other's position and end this turn - the
                         // unloading unit will get
                         // another turn for further unloading later
-                        cmd.addStep(MoveStepType.UNLOAD, other, pos);
+                        cmd.addUnloadStep(other, pos);
                         clientgui.bv.drawMovementData(ce(), cmd);
                         ready();
                     }
                 } else {
                     // some different handling for small craft/dropship
                     // unloading
-                    cmd.addStep(MoveStepType.UNLOAD, other);
+                    cmd.addTargetStep(MoveStepType.UNLOAD, other);
                     clientgui.bv.drawMovementData(ce(), cmd);
                 }
             } // else - Player canceled the unload.
@@ -4113,7 +4113,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                     && (cmd.getLastStep().getVelocity() < 12)
                     && !(((Aero) ce).isSpheroid() || clientgui.getClient()
                             .getGame().getPlanetaryConditions().isVacuum())) {
-                cmd.addStep(MoveStepType.ACC, true);
+                cmd.addFreeStep(MoveStepType.ACC);
             }
             cmd.addStep(MoveStepType.DOWN);
             clientgui.bv.drawMovementData(ce(), cmd);
@@ -4139,7 +4139,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
                     vsd.setVisible(true);
                     m.setVibraSetting(vsd.getSetting());
                 }
-                cmd.addStep(MoveStepType.LAY_MINE, i);
+                cmd.addMineLayingStep(i);
                 clientgui.bv.drawMovementData(ce, cmd);
             }
         } else if (actionCmd.equals(MoveCommand.MOVE_DIG_IN.getCmd())) {
@@ -4241,11 +4241,11 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
         } else if (actionCmd.equals(MoveCommand.MOVE_LAUNCH.getCmd())) {
             TreeMap<Integer, Vector<Integer>> undocked = getUndockedUnits();
             if (!undocked.isEmpty()) {
-                cmd.addStep(MoveStepType.UNDOCK, undocked);
+                cmd.addLaunchStep(MoveStepType.UNDOCK, undocked);
             }
             TreeMap<Integer, Vector<Integer>> launched = getLaunchedUnits();
             if (!launched.isEmpty()) {
-                cmd.addStep(MoveStepType.LAUNCH, launched);
+                cmd.addLaunchStep(MoveStepType.LAUNCH, launched);
             }
             if (!launched.isEmpty() || !undocked.isEmpty()) {
                 clientgui.bv.drawMovementData(ce, cmd);
@@ -4256,7 +4256,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
             // then bring up an option dialog
             int recoverer = getRecoveryUnit();
             if (recoverer != -1) {
-                cmd.addStep(MoveStepType.RECOVER, recoverer, -1);
+                cmd.addRecoveryStep(MoveStepType.RECOVER, recoverer);
                 clientgui.bv.drawMovementData(ce, cmd);
             }
             if (actionCmd.equals(MoveCommand.MOVE_DOCK.getCmd())) {
@@ -4265,7 +4265,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
         } else if (actionCmd.equals(MoveCommand.MOVE_DROP.getCmd())) {
             TreeMap<Integer, Vector<Integer>> dropped = getDroppedUnits();
             if (!dropped.isEmpty()) {
-                cmd.addStep(MoveStepType.DROP, dropped);
+                cmd.addLaunchStep(MoveStepType.DROP, dropped);
                 clientgui.bv.drawMovementData(ce, cmd);
             }
         } else if (actionCmd.equals(MoveCommand.MOVE_JOIN.getCmd())) {
@@ -4273,7 +4273,7 @@ public class MovementDisplay extends StatusBarPhaseDisplay {
             // then bring up an option dialog
             int joined = getUnitJoined();
             if (joined != -1) {
-                cmd.addStep(MoveStepType.JOIN, joined, -1);
+                cmd.addRecoveryStep(MoveStepType.JOIN, joined);
                 clientgui.bv.drawMovementData(ce, cmd);
             }
         } else if (actionCmd.equals(MoveCommand.MOVE_TURN_LEFT.getCmd())) {

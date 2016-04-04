@@ -430,27 +430,27 @@ public class MovePathFinder<C> extends AbstractPathFinder<MovePathFinder.CoordsW
             if (!mp.contains(MoveStepType.MANEUVER)) {
                 // side slips
                 result.add(mp.clone()
-                             .addManeuver(ManeuverType.MAN_SIDE_SLIP_LEFT)
-                             .addStep(MoveStepType.LATERAL_LEFT, true, true));
+                             .addManeuverStep(ManeuverType.MAN_SIDE_SLIP_LEFT)
+                             .addManeuverStep(MoveStepType.LATERAL_LEFT));
                 result.add(mp.clone()
-                             .addManeuver(ManeuverType.MAN_SIDE_SLIP_RIGHT)
-                             .addStep(MoveStepType.LATERAL_RIGHT, true, true));
+                             .addManeuverStep(ManeuverType.MAN_SIDE_SLIP_RIGHT)
+                             .addManeuverStep(MoveStepType.LATERAL_RIGHT));
                 boolean has_moved = mp.getHexesMoved() == 0;
                 if (!has_moved) {
                     //result.add(mp.clone().addManeuver(ManeuverType.MAN_HAMMERHEAD).
                     //result.add(mp.clone().addManeuver(MoveStepType.YAW, true, true);
                     // immelmen
                     if (mp.getFinalVelocity() > 2) {
-                        result.add(mp.clone().addManeuver(ManeuverType.MAN_IMMELMAN));
+                        result.add(mp.clone().addManeuverStep(ManeuverType.MAN_IMMELMAN));
                     }
                     // split s
                     if (mp.getFinalAltitude() > 2) {
-                        result.add(mp.clone().addManeuver(ManeuverType.MAN_SPLIT_S));
+                        result.add(mp.clone().addManeuverStep(ManeuverType.MAN_SPLIT_S));
                     }
                     // loop
                     if (mp.getFinalVelocity() > 4) {
-                        result.add(mp.clone().addManeuver(ManeuverType.MAN_LOOP)
-                                     .addStep(MoveStepType.LOOP, true, true));
+                        result.add(mp.clone().addManeuverStep(ManeuverType.MAN_LOOP)
+                                     .addManeuverStep(MoveStepType.LOOP));
                     }
                 }
             }

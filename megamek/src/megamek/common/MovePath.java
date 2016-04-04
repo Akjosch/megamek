@@ -172,40 +172,40 @@ public class MovePath implements Cloneable, Serializable {
      * @param target the <code>Targetable</code> object that is the target of this
      *               step. For example, the enemy being charged.
      */
-    public MovePath addStep(final MoveStepType type, final Targetable target) {
-        return addStep(new MoveStep(this, type, target));
+    public MovePath addTargetStep(final MoveStepType type, final Targetable target) {
+        return addStep(MoveStep.newTargeted(type, target));
     }
 
-    public MovePath addStep(final MoveStepType type, final Targetable target, final Coords pos) {
-        return addStep(new MoveStep(this, type, target, pos));
+    public MovePath addUnloadStep(final Targetable target, final Coords pos) {
+        return addStep(MoveStep.newUnload(target, pos));
     }
 
-    public MovePath addStep(final MoveStepType type, final int mineToLay) {
-        return addStep(type, -1, mineToLay);
+    public MovePath addMineLayingStep(final int mineToLay) {
+        return addStep(MoveStep.newMineLaying(mineToLay));
     }
 
-    public MovePath addStep(final MoveStepType type, final int recover, final int mineToLay) {
-        return addStep(new MoveStep(this, type, recover, mineToLay));
+    public MovePath addRecoveryStep(final MoveStepType type, final int recover) {
+        return addStep(MoveStep.newRecovery(type, recover));
     }
 
-    public MovePath addStep(MoveStepType type, TreeMap<Integer, Vector<Integer>> targets) {
-        return addStep(new MoveStep(this, type, targets));
+    public MovePath addLaunchStep(MoveStepType type, TreeMap<Integer, Vector<Integer>> targets) {
+        return addStep(MoveStep.newLaunch(type, targets));
     }
 
-    public MovePath addStep(final MoveStepType type, final boolean noCost) {
-        return addStep(new MoveStep(this, type, noCost));
+    public MovePath addFreeStep(final MoveStepType type) {
+        return addStep(MoveStep.newFreeAction(type));
     }
 
-    public MovePath addStep(final MoveStepType type, final boolean noCost, final boolean isManeuver) {
-        return addStep(new MoveStep(this, type, noCost, isManeuver));
+    public MovePath addClearMinefieldStep(final Minefield mf) {
+        return addStep(MoveStep.newClearMinefield(mf));
     }
 
-    public MovePath addStep(final MoveStepType type, final Minefield mf) {
-        return addStep(new MoveStep(this, type, mf));
+    public MovePath addManeuverStep(final int manType) {
+        return addStep(MoveStep.newManeuver(manType));
     }
 
-    public MovePath addManeuver(final int manType) {
-        return addStep(new MoveStep(this, MoveStepType.MANEUVER, -1, -1, manType));
+    public MovePath addManeuverStep(final MoveStepType type) {
+        return addStep(MoveStep.newManeuver(type));
     }
 
     public boolean canShift() {
@@ -368,28 +368,7 @@ public class MovePath implements Cloneable, Serializable {
         steps.removeAllElements();
         for (int i = 0; i < temp.size(); i++) {
             MoveStep step = temp.elementAt(i);
-            if ((step.getTargetPosition() != null) && (step.getTarget(getGame()) != null)) {
-                step = new MoveStep(this, step.getType(), step.getTarget(getGame()), step.getTargetPosition());
-            } else if (step.getTarget(getGame()) != null) {
-                step = new MoveStep(this, step.getType(), step.getTarget(getGame()));
-            } else if (step.getRecoveryUnit() != -1) {
-                step = new MoveStep(this, step.getType(), step.getRecoveryUnit(), -1);
-            } else if (step.getMineToLay() != -1) {
-                step = new MoveStep(this, step.getType(), step.getMineToLay());
-            } else if (step.getLaunched().size() > 0) {
-                step = new MoveStep(this, step.getType(), step.getLaunched());
-            } else if (step.getManeuverType() != ManeuverType.MAN_NONE) {
-                step = new MoveStep(this, step.getType(), -1, -1, step.getManeuverType());
-            } else if (step.isManeuver()) {
-                step = new MoveStep(this, step.getType(), step.hasNoCost(), step.isManeuver());
-            } else if (step.hasNoCost()) {
-                step = new MoveStep(this, step.getType(), step.hasNoCost());
-            } else if (null != step.getMinefield()) {
-                step = new MoveStep(this, step.getType(), step.getMinefield());
-            } else {
-                step = new MoveStep(this, step.getType());
-            }
-            this.addStep(step);
+            this.addStep(new MoveStep(step));
         }
         if (clip) {
             clipToPossible();
@@ -1225,7 +1204,11 @@ public class MovePath implements Cloneable, Serializable {
     public void rotatePathfinder(final int destFacing, final boolean isManeuver) {
         while (getFinalFacing() != destFacing) {
             final MoveStepType stepType = getDirection(getFinalFacing(), destFacing);
-            addStep(stepType, isManeuver, isManeuver);
+            if(isManeuver) {
+                addManeuverStep(stepType);
+            } else {
+                addStep(stepType);
+            }
         }
     }
 
