@@ -321,7 +321,7 @@ public class PathEnumerator {
         }
         MovePath adjusted = new MovePath(getGame(), path.getEntity());
         adjusted.addStep(MoveStepType.CLIMB_MODE_ON);
-        adjusted.addSteps(path.getStepVector(), true);
+        adjusted.addSteps(path.getStepVector());
         adjusted.addStep(MoveStepType.CLIMB_MODE_OFF);
         path.replaceSteps(adjusted.getStepVector());
     }

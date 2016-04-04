@@ -193,10 +193,6 @@ public class MovePath implements Cloneable, Serializable {
                 && !isJumping();
     }
 
-    protected MovePath addStep(final MoveStep step) {
-        return addStep(step, true);
-    }
-
     public Set<Coords> getCoordsSet() {
         if (coordsSet != null) {
             return coordsSet;
@@ -224,7 +220,7 @@ public class MovePath implements Cloneable, Serializable {
      *
      * @param step
      */
-    protected MovePath addStep(final MoveStep step, boolean compile) {
+    protected MovePath addStep(final MoveStep step) {
         if (step == null) {
             System.err.println(new RuntimeException("Received NULL MoveStep"));
             return this;
@@ -234,14 +230,12 @@ public class MovePath implements Cloneable, Serializable {
 
         final MoveStep prev = getStep(steps.size() - 2);
 
-        if (compile) {
-            try {
-                step.compile(getGame(), getEntity(), prev);
-            } catch (final RuntimeException re) {
-                // // N.B. the pathfinding will try steps off the map.
-                // re.printStackTrace();
-                step.setMovementType(EntityMovementType.MOVE_ILLEGAL);
-            }
+        try {
+            step.compile(getGame(), getEntity(), prev);
+        } catch (final RuntimeException re) {
+            // // N.B. the pathfinding will try steps off the map.
+            // re.printStackTrace();
+            step.setMovementType(EntityMovementType.MOVE_ILLEGAL);
         }
 
 
@@ -1345,15 +1339,15 @@ public class MovePath implements Cloneable, Serializable {
         return mp;
     }
 
-    public void addSteps(Vector<MoveStep> path, boolean compile) {
+    public void addSteps(Vector<MoveStep> path) {
         for (MoveStep step : path) {
-            addStep(step, compile);
+            addStep(step);
         }
     }
 
     public void replaceSteps(Vector<MoveStep> path) {
         steps.clear();
-        addSteps(path, true);
+        addSteps(path);
     }
     
     public boolean isEndStep(MoveStep step) {
