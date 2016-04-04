@@ -320,7 +320,7 @@ public class MovePath implements Cloneable, Serializable {
             // Loop through the steps from back to front.
             // Stop looping when the step says to, or we run out of steps.
             int index = steps.size() - 2;
-            while ((index >= 0) && getStep(index).setEndPos(false)) {
+            while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), false)) {
                 index--;
             }
 
@@ -381,7 +381,7 @@ public class MovePath implements Cloneable, Serializable {
 
         // Find the new last step in the path.
         int index = steps.size() - 1;
-        while ((index >= 0) && getStep(index).setEndPos(true)
+        while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), true)
                 && !getStep(index).isLegal(this)) {
             index--;
         }
@@ -985,7 +985,7 @@ public class MovePath implements Cloneable, Serializable {
             while (adjacent.hasNext()) {
                 final MovePath expandedPath = adjacent.next();
 
-                if (expandedPath.getLastStep().isMovementPossible(getGame(),
+                if (expandedPath.getLastStep().isMovementPossible(getGame(), expandedPath.getEntity(),
                         startingPos, startingElev)) {
 
                     if (discovered.containsKey(expandedPath.getKey())) {
@@ -1007,7 +1007,7 @@ public class MovePath implements Cloneable, Serializable {
                     type == MoveStepType.DFA){
                 MovePath expandedPath = candidatePath.clone();
                 expandedPath.addStep(type);
-                if (expandedPath.getLastStep().isMovementPossible(getGame(),
+                if (expandedPath.getLastStep().isMovementPossible(getGame(), expandedPath.getEntity(),
                         startingPos, startingElev)) {
 
                     if (discovered.containsKey(expandedPath.getKey())) {

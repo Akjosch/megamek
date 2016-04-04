@@ -181,7 +181,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<MovePathFinder.CoordsW
                 previousPosition = entity.getPosition();
             }
             return (edge.getLastStep().isMovementPossible(
-                    game, previousPosition, previousElevation));
+                    game, edge.getEntity(), previousPosition, previousElevation));
         }
     }
 

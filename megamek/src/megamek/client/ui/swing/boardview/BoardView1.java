@@ -3698,7 +3698,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             if ((previousStep != null) && game.useVectorMove()) {
                 pathSprites.get(pathSprites.size() - 1).setHidden(true);
             }
-            pathSprites.add(new StepSprite(this, step, md.isEndStep(step)));           
+            pathSprites.add(new StepSprite(this, entity, step, md.isEndStep(step)));           
             previousStep = step;
         }
         repaint(100);

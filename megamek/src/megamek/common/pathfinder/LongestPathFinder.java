@@ -295,7 +295,7 @@ public class LongestPathFinder extends MovePathFinder<Deque<MovePath>> {
                             "Top Move Path uses more MPs than Move Path Candidate and " +
                             "Top Move Path moves a shorter straight line distance."));
                 }
-                if (topLastStep != null && !topLastStep.dueFreeTurn()) {
+                if (topLastStep != null && !topLastStep.dueFreeTurn(mpCandidate.getEntity())) {
                     v.add(mpCandidate);
                     return v;
                 }

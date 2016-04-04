@@ -6271,7 +6271,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
         // we need to make this check on the first move forward and anytime the
         // hex is not clear or is a level change
         if ((isFoggy || isDark) && !lastPos.equals(curPos)
-            && lastPos.equals(step.getEntity().getPosition())) {
+            && lastPos.equals(getPosition())) {
             roll.append(new PilotingRollData(getId(), 0, "moving recklessly"));
         }
         // FIXME: no perfect solution in the current code to determine if hex is

@@ -32,14 +32,15 @@ import megamek.common.MovePath.MoveStepType;
  * entering, exiting or turning.
  */
 class StepSprite extends Sprite {
-
+    private final Entity entity;
     private MoveStep step;
     boolean isLastStep = false;
     private Image baseScaleImage;
     
-    public StepSprite(BoardView1 boardView1, final MoveStep step,
+    public StepSprite(BoardView1 boardView1, final Entity entity, final MoveStep step,
             boolean isLastStep) {
         super(boardView1);
+        this.entity = entity;
         this.step = step;
         this.isLastStep = isLastStep;
 
@@ -213,7 +214,7 @@ class StepSprite extends Sprite {
             case CLIMB_MODE_ON:
                 // draw climb mode indicator
                 String climb;
-                if (step.getEntity().getMovementMode() == EntityMovementMode.WIGE) {
+                if (entity.getMovementMode() == EntityMovementMode.WIGE) {
                     climb = Messages.getString("BoardView1.WIGEClimb"); //$NON-NLS-1$
                 } else {
                     climb = Messages.getString("BoardView1.Climb"); //$NON-NLS-1$
@@ -233,7 +234,7 @@ class StepSprite extends Sprite {
             case CLIMB_MODE_OFF:
                 // cancel climb mode indicator
                 String climboff;
-                if (step.getEntity().getMovementMode() == EntityMovementMode.WIGE) {
+                if (entity.getMovementMode() == EntityMovementMode.WIGE) {
                     climboff = Messages
                             .getString("BoardView1.WIGEClimbOff"); //$NON-NLS-1$
                 } else {
@@ -517,12 +518,12 @@ class StepSprite extends Sprite {
             return;
         }
 
-        if (!step.getEntity().isAirborne()
-                || !(step.getEntity() instanceof Aero)) {
+        if (!entity.isAirborne()
+                || !(entity instanceof Aero)) {
             return;
         }
 
-        if (((Aero) step.getEntity()).isSpheroid()) {
+        if (((Aero) entity).isSpheroid()) {
             return;
         }
 
@@ -561,9 +562,9 @@ class StepSprite extends Sprite {
                     .append(">");
 
             col = Color.RED;
-            if (step.dueFreeTurn()) {
+            if (step.dueFreeTurn(entity)) {
                 col = Color.GREEN;
-            } else if (step.canAeroTurn(bv.game)) {
+            } else if (step.canAeroTurn(bv.game, entity)) {
                 col = Color.YELLOW;
             }
             // Convert the buffer to a String and draw it.
@@ -583,13 +584,11 @@ class StepSprite extends Sprite {
         StringBuffer costStringBuf = new StringBuffer();
         costStringBuf.append(step.getMpUsed());
 
-        Entity e = step.getEntity();
-        
         // If the step is using a road bonus, mark it.
         if (step.isOnlyPavement()
-                && (e instanceof Tank)
-                && !(e instanceof VTOL)
-                && (e.getMovementMode() != EntityMovementMode.WIGE)) {
+                && (entity instanceof Tank)
+                && !(entity instanceof VTOL)
+                && (entity.getMovementMode() != EntityMovementMode.WIGE)) {
             costStringBuf.append("+"); //$NON-NLS-1$
         }
 
@@ -605,8 +604,7 @@ class StepSprite extends Sprite {
         }
 
         if (step.isUsingMASC()
-                && !step.getEntity()
-                        .hasWorkingMisc(MiscType.F_JET_BOOSTER)) {
+                && !entity.hasWorkingMisc(MiscType.F_JET_BOOSTER)) {
             costStringBuf.append("["); //$NON-NLS-1$
             costStringBuf.append(step.getTargetNumberMASC());
             costStringBuf.append("+]"); //$NON-NLS-1$
@@ -621,7 +619,7 @@ class StepSprite extends Sprite {
                     .append("}");
         }
 
-        if (step.getEntity().isAirborne()) {
+        if (entity.isAirborne()) {
             costStringBuf.append("{").append(step.getAltitude())
                     .append("}");
         }
