@@ -7653,7 +7653,7 @@ public class Server implements Runnable {
             }
 
             // check if we are using reckless movement
-            rollTarget = entity.checkRecklessMove(step, overallMoveType,
+            rollTarget = entity.checkRecklessMove(md, step, overallMoveType,
                     curHex, lastPos, curPos, prevHex);
             if (rollTarget.getValue() != TargetRoll.CHECK_FALSE) {
                 if (entity instanceof Mech) {

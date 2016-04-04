@@ -259,7 +259,7 @@ public class MovePath implements Cloneable, Serializable {
         final MoveStep prev = getStep(steps.size() - 2);
 
         try {
-            step.compile(getGame(), getEntity(), prev);
+            step.compile(getGame(), getEntity(), this);
         } catch (final RuntimeException re) {
             // // N.B. the pathfinding will try steps off the map.
             // re.printStackTrace();

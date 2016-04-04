@@ -6246,13 +6246,14 @@ public abstract class Entity extends TurnOrdered implements Transporter,
     /**
      * Checks if an entity is passing through certain terrain while not moving
      * carefully
+     * @param path 
      */
-    public PilotingRollData checkRecklessMove(MoveStep step,
+    public PilotingRollData checkRecklessMove(MovePath path, MoveStep step,
             EntityMovementType moveType, IHex curHex, Coords lastPos,
             Coords curPos, IHex prevHex) {
         PilotingRollData roll = getBasePilotingRoll(moveType);
         // no need to go further if movement is careful
-        if (step.isCareful()) {
+        if (path.isCareful()) {
             roll.addModifier(TargetRoll.CHECK_FALSE, "moving carefully");
             return roll;
         }

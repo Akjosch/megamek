@@ -178,7 +178,7 @@ public class SharedUtility {
             }
 
             //check if we are moving recklessly
-            rollTarget = entity.checkRecklessMove(step, overallMoveType,
+            rollTarget = entity.checkRecklessMove(md, step, overallMoveType,
                     curHex, lastPos, curPos, prevHex);
             checkNag(rollTarget, nagReport, psrList);
 

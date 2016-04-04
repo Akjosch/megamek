@@ -176,12 +176,6 @@ public class MoveStep implements Serializable {
      */
     private boolean isJumpingPath = false;
 
-    /**
-     * Determines if this MoveStep is part of a MovePath that is moving
-     * carefully.
-     */
-    private boolean isCarefulPath = true;
-
     /*
      * Aero related stuf
      */
@@ -240,7 +234,6 @@ public class MoveStep implements Serializable {
     public MoveStep(MoveStep other) {
         this.type = other.type;
         this.isJumpingPath = other.isJumpingPath;
-        this.isCarefulPath = other.isCarefulPath;
         this.hasEverUnloaded = other.hasEverUnloaded;
         // Targeted-containing paths - CHARGE, DFA, MOUNT, UNLOAD
         this.targetId = other.targetId;
@@ -277,7 +270,6 @@ public class MoveStep implements Serializable {
         this.type = type;
         if (path != null) {
             isJumpingPath = path.isJumping();
-            isCarefulPath = path.isCareful();
         }
         if ((type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
                 || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK)) {
@@ -342,9 +334,10 @@ public class MoveStep implements Serializable {
      * @param game
      * @param entity
      * @param prev
+     * @param path 
      */
     private void compileMove(final IGame game, final Entity entity,
-                             MoveStep prev) {
+        MovePath path, MoveStep prev) {
 
         IHex destHex = game.getBoard().getHex(getPosition());
 
@@ -530,7 +523,7 @@ public class MoveStep implements Serializable {
                 }
             }
         } else {
-            calcMovementCostFor(game, entity, prev);
+            calcMovementCostFor(game, entity, path, prev);
         }
         // check for water
         if (!isPavementStep()
@@ -592,17 +585,17 @@ public class MoveStep implements Serializable {
      * @param entity the <code>Entity</code> taking this step.
      * @param prev   the previous step in the path.
      */
-    protected void compile(final IGame game, final Entity entity, MoveStep prev) {
+    protected void compile(final IGame game, final Entity entity, final MovePath path) {
         final boolean isInfantry = entity instanceof Infantry;
         boolean isFieldArtillery = (entity instanceof Infantry)
                 && ((Infantry) entity).hasActiveFieldArtillery();
+        MoveStep prev = path.getSecondLastStep();
         copy(game, entity, prev);
 
         // Is this the first step?
         if (prev == null) {
             prev = new MoveStep(null, MoveStepType.FORWARDS);
             prev.setFromEntity(entity, game);
-            prev.isCarefulPath = isCareful();
             prev.isJumpingPath = isJumping();
             setFirstStep(prev.mpUsed == 0); // Bug 1519330 - its not a first
             // step when continuing after a fall
@@ -660,7 +653,7 @@ public class MoveStep implements Serializable {
                 if (!entity.hasQuirk(OptionsConstants.QUIRK_POS_POWER_REVERSE)) {
                     setRunProhibited(true);
                 }
-                compileMove(game, entity, prev);
+                compileMove(game, entity, path, prev);
                 break;
             case FORWARDS:
             case DFA:
@@ -668,13 +661,13 @@ public class MoveStep implements Serializable {
                 // step forwards or backwards
                 moveInDir(game.getBoard(), getFacing());
                 setThisStepBackwards(false);
-                compileMove(game, entity, prev);
+                compileMove(game, entity, path, prev);
                 break;
             case CHARGE:
                 if (!(entity.isAirborne()) || !game.useVectorMove()) {
                     moveInDir(game.getBoard(), getFacing());
                     setThisStepBackwards(false);
-                    compileMove(game, entity, prev);
+                    compileMove(game, entity, path, prev);
                 }
                 break;
             case LATERAL_LEFT_BACKWARDS:
@@ -685,7 +678,7 @@ public class MoveStep implements Serializable {
                 if (!entity.hasQuirk(OptionsConstants.QUIRK_POS_POWER_REVERSE)) {
                     setRunProhibited(true);
                 }
-                compileMove(game, entity, prev);
+                compileMove(game, entity, path, prev);
                 if (entity.isAirborne()) {
                     setMp(0);
                 } else if (entity.isUsingManAce()
@@ -703,7 +696,7 @@ public class MoveStep implements Serializable {
                 moveInDir(game.getBoard(), MovePath.getAdjustedFacing(getFacing(),
                         MovePath.turnForLateralShift(getType())));
                 setThisStepBackwards(false);
-                compileMove(game, entity, prev);
+                compileMove(game, entity, path, prev);
                 if (entity.isAirborne()) {
                     setMp(0);
                 } else if (entity.isUsingManAce()
@@ -2461,8 +2454,9 @@ public class MoveStep implements Serializable {
 
     /**
      * Amount of movement points required to move from start to dest
+     * @param path 
      */
-    protected void calcMovementCostFor(IGame game, final Entity entity, MoveStep prevStep) {
+    protected void calcMovementCostFor(IGame game, final Entity entity, MovePath path, MoveStep prevStep) {
         final Coords prev = prevStep.getPosition();
         final int prevEl = prevStep.getElevation();
         final EntityMovementMode moveMode = entity.getMovementMode();
@@ -2495,7 +2489,7 @@ public class MoveStep implements Serializable {
                 (moveMode == EntityMovementMode.VTOL) || isJumping();
 
         // Apply careful movement MP penalties for fog and light (TO pg 63)
-        if (!game.getBoard().inSpace() && isCareful() && applyNightPen
+        if (!game.getBoard().inSpace() && path.isCareful() && applyNightPen
                 && !carefulExempt) {
             // Fog
             switch (game.getPlanetaryConditions().getFog()) {
@@ -2562,7 +2556,7 @@ public class MoveStep implements Serializable {
                 }
                 // if using non-careful movement on ice then reduce cost
                 if (destHex.containsTerrain(Terrains.ICE)
-                        && !isCareful()
+                        && !path.isCareful()
                         && (nDestEl == destHex.surface())) {
                     mp--;
                 }
@@ -3404,9 +3398,4 @@ public class MoveStep implements Serializable {
         // START_JUMP step, the MovePath may not be considered jumping yet
         return isJumpingPath || (type == MoveStepType.START_JUMP);
     }
-
-    public boolean isCareful() {
-        return isCarefulPath;
-    }
-
 }
