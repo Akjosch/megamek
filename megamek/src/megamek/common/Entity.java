@@ -6640,7 +6640,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
      * @return 0, no eligible building; 1, exiting; 2, entering; 3, both; 4,
      * stepping on roof, 8 changing elevations within a building
      */
-    public int checkMovementInBuilding(MoveStep step, MoveStep prevStep,
+    public int checkMovementInBuilding(MoveStep step, MoveStep prevStep, boolean isJumping,
                                        Coords curPos, Coords prevPos) {
         if ((prevPos == null)
             || (prevPos.equals(curPos) && !(this instanceof Protomech))) {
@@ -6654,12 +6654,12 @@ public abstract class Entity extends TurnOrdered implements Transporter,
         }
 
         if ((this instanceof Infantry)
-            && (step.getMovementType(false) != EntityMovementType.MOVE_JUMP)) {
+            && (step.getMovementType(false, isJumping) != EntityMovementType.MOVE_JUMP)) {
             return 0;
         }
 
         if ((this instanceof Protomech) && (prevStep != null)
-            && (prevStep.getMovementType(false) == EntityMovementType.MOVE_JUMP)) {
+            && (prevStep.getMovementType(false, isJumping) == EntityMovementType.MOVE_JUMP)) {
             return 0;
         }
 
@@ -6681,7 +6681,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
         } else if (((step.getElevation() == curHex
                 .terrainLevel(Terrains.BLDG_ELEV)) || (step.getElevation() == curHex
                 .terrainLevel(Terrains.BRIDGE_ELEV)))
-                   && (step.getMovementType(false) != EntityMovementType.MOVE_JUMP)) {
+                   && (step.getMovementType(false, isJumping) != EntityMovementType.MOVE_JUMP)) {
             rv += 4;
         }
         // check previous hex for building

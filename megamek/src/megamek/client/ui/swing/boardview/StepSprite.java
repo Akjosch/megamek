@@ -35,14 +35,16 @@ class StepSprite extends Sprite {
     private final Entity entity;
     private MoveStep step;
     boolean isLastStep = false;
+    boolean isJumping = false;
     private Image baseScaleImage;
     
     public StepSprite(BoardView1 boardView1, final Entity entity, final MoveStep step,
-            boolean isLastStep) {
+            boolean isLastStep, boolean isJumping) {
         super(boardView1);
         this.entity = entity;
         this.step = step;
         this.isLastStep = isLastStep;
+        this.isJumping = isJumping;
 
         // step is the size of the hex that this step is in
         bounds = new Rectangle(bv.getHexLocation(step.getPosition()), bv.hex_size);
@@ -101,7 +103,7 @@ class StepSprite extends Sprite {
         Color col;
         Shape CurrentArrow;
         // set color
-        switch (step.getMovementType(isLastStep)) {
+        switch (step.getMovementType(isLastStep, isJumping)) {
             case MOVE_RUN:
             case MOVE_VTOL_RUN:
             case MOVE_OVER_THRUST:
@@ -610,7 +612,7 @@ class StepSprite extends Sprite {
             costStringBuf.append("+]"); //$NON-NLS-1$
         }
 
-        EntityMovementType moveType = step.getMovementType(isLastStep);
+        EntityMovementType moveType = step.getMovementType(isLastStep, isJumping);
         if ((moveType == EntityMovementType.MOVE_VTOL_WALK)
                 || (moveType == EntityMovementType.MOVE_VTOL_RUN)
                 || (moveType == EntityMovementType.MOVE_SUBMARINE_WALK)

@@ -348,7 +348,7 @@ public class MovePath implements Cloneable, Serializable {
             // Loop through the steps from back to front.
             // Stop looping when the step says to, or we run out of steps.
             int index = steps.size() - 2;
-            while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), false)) {
+            while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), isJumping(), false)) {
                 index--;
             }
 
@@ -388,7 +388,7 @@ public class MovePath implements Cloneable, Serializable {
 
         // Find the new last step in the path.
         int index = steps.size() - 1;
-        while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), true)
+        while ((index >= 0) && getStep(index).setEndPos(game, game.getBoard(), isJumping(), true)
                 && !getStep(index).isLegal(this)) {
             index--;
         }
@@ -573,7 +573,7 @@ public class MovePath implements Cloneable, Serializable {
         if (getLastStep() == null) {
             return EntityMovementType.MOVE_NONE;
         }
-        return getLastStep().getMovementType(true);
+        return getLastStep().getMovementType(true, isJumping());
     }
 
     public Vector<MoveStep> getStepVector() {
@@ -589,7 +589,7 @@ public class MovePath implements Cloneable, Serializable {
         }
         return null;
     }
-
+    
     public MoveStep getSecondLastStep() {
         if (steps.size() > 1) {
             return getStep(steps.size() - 2);
@@ -601,7 +601,7 @@ public class MovePath implements Cloneable, Serializable {
     public void printAllSteps() {
         System.out.println("*Steps*");
         for (int i = 0; i < steps.size(); i++) {
-            System.out.println("  " + i + ": " + getStep(i) + ", " + getStep(i).getMovementType(i == (steps.size() - 1)));
+            System.out.println("  " + i + ": " + getStep(i) + ", " + getStep(i).getMovementType(i == (steps.size() - 1), isJumping()));
         }
     }
 
@@ -661,7 +661,7 @@ public class MovePath implements Cloneable, Serializable {
         i = steps.elements();
         while (i.hasMoreElements()) {
             step = i.nextElement();
-            if (step.getMovementType(isEndStep(step)) != EntityMovementType.MOVE_ILLEGAL) {
+            if (step.getMovementType(isEndStep(step), isJumping()) != EntityMovementType.MOVE_ILLEGAL) {
                 goodSteps.addElement(step);
             } else {
                 break;
@@ -993,7 +993,7 @@ public class MovePath implements Cloneable, Serializable {
                 final MovePath expandedPath = adjacent.next();
 
                 if (expandedPath.getLastStep().isMovementPossible(getGame(), expandedPath.getEntity(),
-                        startingPos, startingElev)) {
+                    expandedPath.isJumping(), startingPos, startingElev)) {
 
                     if (discovered.containsKey(expandedPath.getKey())) {
                         continue;
@@ -1015,7 +1015,7 @@ public class MovePath implements Cloneable, Serializable {
                 MovePath expandedPath = candidatePath.clone();
                 expandedPath.addStep(type);
                 if (expandedPath.getLastStep().isMovementPossible(getGame(), expandedPath.getEntity(),
-                        startingPos, startingElev)) {
+                    expandedPath.isJumping(), startingPos, startingElev)) {
 
                     if (discovered.containsKey(expandedPath.getKey())) {
                         continue;

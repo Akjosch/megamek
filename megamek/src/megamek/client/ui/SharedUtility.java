@@ -97,7 +97,7 @@ public class SharedUtility {
             boolean isPavementStep = step.isPavementStep();
 
             // stop for illegal movement
-            if (step.getMovementType(md.isEndStep(step)) == EntityMovementType.MOVE_ILLEGAL) {
+            if (step.getMovementType(md.isEndStep(step), md.isJumping()) == EntityMovementType.MOVE_ILLEGAL) {
                 break;
             }
 
@@ -116,7 +116,7 @@ public class SharedUtility {
             checkNag(rollTarget, nagReport, psrList);
 
             // set most step parameters
-            moveType = step.getMovementType(md.isEndStep(step));
+            moveType = step.getMovementType(md.isEndStep(step), md.isJumping());
             distance = step.getDistance();
 
             // set last step parameters
@@ -272,7 +272,7 @@ public class SharedUtility {
             }
 
             // Handle non-infantry moving into a building.
-            int buildingMove = entity.checkMovementInBuilding(step, prevStep, curPos, lastPos);
+            int buildingMove = entity.checkMovementInBuilding(step, prevStep, md.isJumping(), curPos, lastPos);
             if ((buildingMove > 1) && !(entity instanceof Protomech)) {
 
                 // Get the building being entered.

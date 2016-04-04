@@ -6634,8 +6634,7 @@ public class Server implements Runnable {
         EntityMovementType lastStepMoveType = md.getLastStepMovementType();
         for (final Enumeration<MoveStep> i = md.getSteps(); i.hasMoreElements(); ) {
             final MoveStep step = i.nextElement();
-            EntityMovementType stepMoveType = step.getMovementType(md
-                    .isEndStep(step));
+            EntityMovementType stepMoveType = step.getMovementType(md.isEndStep(step), md.isJumping());
             wasProne = entity.isProne();
             boolean isPavementStep = step.isPavementStep();
             entity.inReverse = step.isThisStepBackwards();
@@ -7427,14 +7426,13 @@ public class Server implements Runnable {
 
             // set last step parameters
             curPos = step.getPosition();
-            if (!((entity.getJumpType() == Mech.JUMP_BOOSTER)
-                    && step.isJumping())) {
+            if (!((entity.getJumpType() == Mech.JUMP_BOOSTER) && md.isJumping())) {
                 curFacing = step.getFacing();
             }
             // check if a building PSR will be needed later, before setting the
             // new elevation
             int buildingMove = entity.checkMovementInBuilding(step, prevStep,
-                    curPos, lastPos);
+                md.isJumping(), curPos, lastPos);
             curVTOLElevation = step.getElevation();
             curAltitude = step.getAltitude();
             curElevation = step.getElevation();

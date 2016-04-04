@@ -3646,7 +3646,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
         // first get the color for the vector
         Color col = Color.blue;
         if (md.getLastStep() != null) {
-            switch (md.getLastStep().getMovementType(true)) {
+            switch (md.getLastStepMovementType()) {
                 case MOVE_RUN:
                 case MOVE_VTOL_RUN:
                 case MOVE_OVER_THRUST:
@@ -3698,7 +3698,7 @@ public class BoardView1 extends JPanel implements IBoardView, Scrollable,
             if ((previousStep != null) && game.useVectorMove()) {
                 pathSprites.get(pathSprites.size() - 1).setHidden(true);
             }
-            pathSprites.add(new StepSprite(this, entity, step, md.isEndStep(step)));           
+            pathSprites.add(new StepSprite(this, entity, step, md.isEndStep(step), md.isJumping()));           
             previousStep = step;
         }
         repaint(100);

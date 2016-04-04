@@ -166,7 +166,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<MovePathFinder.CoordsW
                     return true;
                 } else {
                     MoveStep lastStep = edge.getLastStep();
-                    return (lastStep == null) || lastStep.getMovementType(true) != EntityMovementType.MOVE_ILLEGAL;
+                    return (lastStep == null) || lastStep.getMovementType(true, edge.isJumping()) != EntityMovementType.MOVE_ILLEGAL;
                 }
             }
             Coords previousPosition;
@@ -181,7 +181,7 @@ public class MovePathFinder<C> extends AbstractPathFinder<MovePathFinder.CoordsW
                 previousPosition = entity.getPosition();
             }
             return (edge.getLastStep().isMovementPossible(
-                    game, edge.getEntity(), previousPosition, previousElevation));
+                    game, edge.getEntity(), edge.isJumping(), previousPosition, previousElevation));
         }
     }
 
