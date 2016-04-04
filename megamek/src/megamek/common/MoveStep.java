@@ -37,10 +37,7 @@ import megamek.common.options.OptionsConstants;
  * class needs to be agnostic of what path it belongs to.
  */
 public class MoveStep implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6075640793056182285L;
+    private static final long serialVersionUID = -6075640793056182286L;
     private MoveStepType type = MoveStepType.NONE;
     private int targetId = Entity.NONE;
     private int targetType = Targetable.TYPE_ENTITY;
@@ -158,6 +155,34 @@ public class MoveStep implements Serializable {
      * used for landed Aerodyne Dropships and Mobile Structures.
      */
     private ArrayList<Coords> crushedBuildingLocs = new ArrayList<Coords>();
+
+    /** Copy constructor */
+    public MoveStep(MoveStep other) {
+        this.type = other.type;
+        this.isJumpingPath = other.isJumpingPath;
+        this.isCarefulPath = other.isCarefulPath;
+        this.hasEverUnloaded = other.hasEverUnloaded;
+        // Targeted-containing paths - CHARGE, DFA, MOUNT, UNLOAD
+        this.targetId = other.targetId;
+        this.targetType = other.targetType;
+        // UNLOAD from small craft only
+        this.targetPos = other.targetPos;
+        // LAY_MINE
+        this.mineToLay = other.mineToLay;
+        // CLEAR_MINEFIELD
+        this.mf = other.mf;
+        // UNDOCK, LAUNCH, DROP
+        this.launched = new TreeMap<>(other.launched);
+        // RECOVER, JOIN
+        this.recoveryUnit = other.recoveryUnit;
+        // Is part of an aerospace maneuver
+        this.maneuver = other.maneuver;
+        // ACC just before DOWN
+        this.noCost = other.noCost;
+        // Remainder of the internal data is set by compile(...) according to the position in path
+        // and state of the entity and board
+    }
+
 
     /**
      * Create a step of the given type.
@@ -287,7 +312,7 @@ public class MoveStep implements Serializable {
         this(path, type);
         this.mf = mf;
     }
-
+    
     @Override
     public String toString() {
         return type.text;
