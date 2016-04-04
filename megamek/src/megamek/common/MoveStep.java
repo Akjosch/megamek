@@ -290,77 +290,7 @@ public class MoveStep implements Serializable {
 
     @Override
     public String toString() {
-        switch (type) {
-            case BACKWARDS:
-                return "B";
-            case CHARGE:
-                return "Ch";
-            case DFA:
-                return "DFA";
-            case FORWARDS:
-                return "F";
-            case CAREFUL_STAND:
-            case GET_UP:
-                return "Up";
-            case GO_PRONE:
-                return "Prone";
-            case START_JUMP:
-                return "StrJump";
-            case TURN_LEFT:
-                return "L";
-            case TURN_RIGHT:
-                return "R";
-            case LATERAL_LEFT:
-                return "ShL";
-            case LATERAL_RIGHT:
-                return "ShR";
-            case LATERAL_LEFT_BACKWARDS:
-                return "ShLB";
-            case LATERAL_RIGHT_BACKWARDS:
-                return "ShRB";
-            case UNJAM_RAC:
-                return "Unjam";
-            case SEARCHLIGHT:
-                return "SLight";
-            case LOAD:
-                return "Load";
-            case UNLOAD:
-                return "Unload";
-            case EJECT:
-                return "Eject";
-            case UP:
-                return "U";
-            case DOWN:
-                return "D";
-            case HULL_DOWN:
-                return "HullDown";
-            case CLIMB_MODE_ON:
-                return "CM+";
-            case CLIMB_MODE_OFF:
-                return "CM-";
-            case TAKEOFF:
-                return "Takeoff";
-            case VTAKEOFF:
-                return "Vertical Takeoff";
-            case LAND:
-                return "Landing";
-            case VLAND:
-                return "Vertical Landing";
-            case ACC:
-                return "Acc";
-            case MANEUVER:
-                return "Maneuver";
-            case RETURN:
-                return "Fly Off (Return)";
-            case OFF:
-                return "Fly Off";
-            case FLEE:
-                return "Flee";
-            case EVADE:
-                return "Evade";
-            default:
-                return "???";
-        }
+        return type.text;
     }
 
     public MoveStepType getType() {
@@ -1201,7 +1131,7 @@ public class MoveStep implements Serializable {
     public void moveInDir(final IBoard board, int dir) {
         position = position.translated(dir);
         if (!board.contains(position)) {
-            throw new RuntimeException("Coordinate off the board.");
+            throw new RuntimeException("Coordinate off the board."); //$NON-NLS-1$
         }
     }
 

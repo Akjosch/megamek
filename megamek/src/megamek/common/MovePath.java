@@ -55,7 +55,35 @@ public class MovePath implements Cloneable, Serializable {
     }
 
     public enum MoveStepType {
-        NONE, FORWARDS, BACKWARDS, TURN_LEFT, TURN_RIGHT, GET_UP, GO_PRONE, START_JUMP, CHARGE, DFA, FLEE, LATERAL_LEFT, LATERAL_RIGHT, LATERAL_LEFT_BACKWARDS, LATERAL_RIGHT_BACKWARDS, UNJAM_RAC, LOAD, UNLOAD, EJECT, CLEAR_MINEFIELD, UP, DOWN, SEARCHLIGHT, LAY_MINE, HULL_DOWN, CLIMB_MODE_ON, CLIMB_MODE_OFF, SWIM, DIG_IN, FORTIFY, SHAKE_OFF_SWARMERS, TAKEOFF, VTAKEOFF, LAND, ACC, DEC, EVADE, SHUTDOWN, STARTUP, SELF_DESTRUCT, ACCN, DECN, ROLL, OFF, RETURN, LAUNCH, THRUST, YAW, CRASH, RECOVER, RAM, HOVER, MANEUVER, LOOP, CAREFUL_STAND, JOIN, DROP, VLAND, MOUNT, UNDOCK, TAKE_COVER;
+        NONE("None"), //$NON-NLS-1$
+        FORWARDS("F", 1), BACKWARDS("B", 1), TURN_LEFT("L"), TURN_RIGHT("R"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        GET_UP("Up"), GO_PRONE("Prone"), START_JUMP("StrJump"), CHARGE("Ch"), DFA("DFA"), FLEE("Flee"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        LATERAL_LEFT("ShL", 1), LATERAL_RIGHT("ShR", 1),  //$NON-NLS-1$//$NON-NLS-2$
+        LATERAL_LEFT_BACKWARDS("ShLB", 1), LATERAL_RIGHT_BACKWARDS("ShRB", 1), //$NON-NLS-1$ //$NON-NLS-2$
+        UNJAM_RAC("Unjam"), LOAD("Load"), UNLOAD("Unload"), EJECT("Eject"),    //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+        CLEAR_MINEFIELD("Clear Mine"), UP("U"), DOWN("D"), SEARCHLIGHT("SLight"), LAY_MINE("Mine"), HULL_DOWN("HullDown"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        CLIMB_MODE_ON("CM+"), CLIMB_MODE_OFF("CM-"), SWIM("Swim"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        DIG_IN("DigIn"), FORTIFY("Fortify"), SHAKE_OFF_SWARMERS("ShakeOff"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        TAKEOFF("Takeoff"), VTAKEOFF("Vertical Takeoff"), LAND("Landing"),  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+        ACC("Acc"), DEC("Dec"), EVADE("Evade"), SHUTDOWN("Shutdown"), STARTUP("Startup"),   //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
+        SELF_DESTRUCT("Suicide"), ACCN("AccN"), DECN("DecN"), ROLL("Roll"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        OFF("Fly Off"), RETURN("Fly Off (Return)"), LAUNCH("Launch"), THRUST("Thrust"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        YAW("Yaw"), CRASH("Crash"), RECOVER("Recover"), RAM("Ram"), HOVER("Hover"),   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
+        MANEUVER("Maneuver"), LOOP("Loop"), CAREFUL_STAND("Up"),  //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+        JOIN("Join"), DROP("Drop"), VLAND("Vertical Landing"),   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+        MOUNT("Mount"), UNDOCK("Undock"), TAKE_COVER("Cover");   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+        
+        public final String text;
+        public final int dist;
+        
+        private MoveStepType(String text) {
+            this(text, 0);
+        }
+        
+        private MoveStepType(String text, int dist) {
+            this.text = text;
+            this.dist = dist;
+        }
     }
 
     public static class Key {
