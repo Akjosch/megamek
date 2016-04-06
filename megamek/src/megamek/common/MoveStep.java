@@ -250,24 +250,13 @@ public class MoveStep implements Serializable {
         // and state of the entity and board
     }
 
-    private MoveStep(MoveStepType type) {
-        this(null, type);
-    }
-
     /**
      * Create a step of the given type.
-     *
-     * @param type - should match one of the MovePath constants, but this is not
-     *             currently checked.
      */
-    public MoveStep(MovePath path, MoveStepType type) {
+    public MoveStep(MoveStepType type) {
         this.type = type;
-        if ((type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
-                || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK)) {
-            hasEverUnloaded = true;
-        } else {
-            hasEverUnloaded = false;
-        }
+        this.hasEverUnloaded = (type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
+            || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK);
     }
 
     @Override
@@ -586,7 +575,7 @@ public class MoveStep implements Serializable {
 
         // Is this the first step?
         if (prev == null) {
-            prev = new MoveStep(null, MoveStepType.FORWARDS);
+            prev = new MoveStep(MoveStepType.FORWARDS);
             prev.setFromEntity(entity, game);
             // Bug 1519330 - its not a first step when continuing after a fall
             setFirstStep(prev.mpUsed == 0); 

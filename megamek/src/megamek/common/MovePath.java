@@ -162,7 +162,7 @@ public class MovePath implements Cloneable, Serializable {
      */
     public MovePath addStep(final MoveStepType type) {
         // TODO : detect steps off the map *here*.
-        return addStep(new MoveStep(this, type));
+        return addStep(new MoveStep(type));
     }
 
     /**
@@ -696,7 +696,7 @@ public class MovePath implements Cloneable, Serializable {
             steps.removeElementAt(index);
             steps.removeElementAt(index);
             // add new step
-            final MoveStep shift = new MoveStep(this, lateralShiftForTurn(stepType, direction));
+            final MoveStep shift = new MoveStep(lateralShiftForTurn(stepType, direction));
             addStep(shift);
         }
     }
