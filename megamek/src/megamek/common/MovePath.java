@@ -162,7 +162,7 @@ public class MovePath implements Cloneable, Serializable {
      */
     public MovePath addStep(final MoveStepType type) {
         // TODO : detect steps off the map *here*.
-        return addStep(new MoveStep(type));
+        return addStep(MoveStep.newStep(type));
     }
 
     /**
@@ -368,7 +368,7 @@ public class MovePath implements Cloneable, Serializable {
         steps.removeAllElements();
         for (int i = 0; i < temp.size(); i++) {
             MoveStep step = temp.elementAt(i);
-            this.addStep(new MoveStep(step));
+            this.addStep(MoveStep.copyOf(step));
         }
         if (clip) {
             clipToPossible();
@@ -696,7 +696,7 @@ public class MovePath implements Cloneable, Serializable {
             steps.removeElementAt(index);
             steps.removeElementAt(index);
             // add new step
-            final MoveStep shift = new MoveStep(lateralShiftForTurn(stepType, direction));
+            final MoveStep shift = MoveStep.newStep(lateralShiftForTurn(stepType, direction));
             addStep(shift);
         }
     }

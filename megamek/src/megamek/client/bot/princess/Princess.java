@@ -756,7 +756,7 @@ public class Princess extends BotClient {
             MovePath.MoveStepType type = (getBooleanOption("tacops_careful_stand") ?
                                           MovePath.MoveStepType.CAREFUL_STAND :
                                           MovePath.MoveStepType.GET_UP);
-            MoveStep getUp = new MoveStep(type);
+            MoveStep getUp = MoveStep.newStep(type);
 
             // If our odds to get up are equal to or worse than the threshold, consider ourselves immobile.
             PilotingRollData target = mech.checkGetUp(getUp,
@@ -768,7 +768,7 @@ public class Princess extends BotClient {
 
         // How likely are we to get unstuck.
         MovePath.MoveStepType type = MovePath.MoveStepType.FORWARDS;
-        MoveStep walk = new MoveStep(type);
+        MoveStep walk = MoveStep.newStep(type);
         IHex hex = getHex(mech.getPosition());
         PilotingRollData target = mech.checkBogDown(walk,
                 movePath.getLastStepMovementType(), hex,

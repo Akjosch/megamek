@@ -54,68 +54,87 @@ public class MoveStep implements Serializable {
         }
     }
     
+    /** Create a generic movement step */
+    public static MoveStep newStep(MoveStepType type) {
+        return new MoveStep(type);
+    }
+
+    /** Create a new unload-target-at-position step */
     public static MoveStep newUnload(Targetable target, Coords pos) {
-        MoveStep result = new MoveStep(MoveStepType.UNLOAD);
+        MoveStep result = newStep(MoveStepType.UNLOAD);
         result.targetId = target.getTargetId();
         result.targetType = target.getTargetType();
         result.targetPos = pos;
         return result;
     }
 
+    /** Create a new step involving some target (MOUNT, UNLOAD, DFA, CHARGE) */
     public static MoveStep newTargeted(MoveStepType type, Targetable target) {
         ensureType(type, MoveStepType.MOUNT, MoveStepType.UNLOAD, MoveStepType.DFA, MoveStepType.CHARGE);
-        MoveStep result = new MoveStep(type);
+        MoveStep result = newStep(type);
         result.targetId = target.getTargetId();
         result.targetType = target.getTargetType();
         return result;
     }
 
+    /** Create a new step launching an entity (LAUNCH, UNDOCK, DROP) */
     public static MoveStep newLaunch(MoveStepType type, TreeMap<Integer, Vector<Integer>> targets) {
         ensureType(type, MoveStepType.LAUNCH, MoveStepType.UNDOCK, MoveStepType.DROP);
-        MoveStep result = new MoveStep(type);
+        MoveStep result = newStep(type);
         result.launched = new TreeMap<>(targets);
         return result;
     }
 
+    /** Creating a new maneuver step with the given type */
     public static MoveStep newManeuver(int manType) {
-        MoveStep result = new MoveStep(MoveStepType.MANEUVER);
+        MoveStep result = newStep(MoveStepType.MANEUVER);
         result.maneuverType = manType;
         return result;
     }
 
+    /** Create a new (free) maneuver sub-step */
     public static MoveStep newManeuver(MoveStepType type) {
         ensureType(type, MoveStepType.ACC, MoveStepType.DEC, MoveStepType.UP, MoveStepType.DOWN,
             MoveStepType.FORWARDS, MoveStepType.LATERAL_LEFT, MoveStepType.LATERAL_RIGHT,
             MoveStepType.TURN_LEFT, MoveStepType.TURN_RIGHT, MoveStepType.LOOP);
-        MoveStep result = new MoveStep(type);
+        MoveStep result = newStep(type);
         result.maneuver = true;
         result.noCost = true;
         return result;
     }
 
+    /** Create a new "clear mine field" step for the given mine field */
     public static MoveStep newClearMinefield(Minefield mf) {
-        MoveStep result = new MoveStep(MoveStepType.CLEAR_MINEFIELD);
+        MoveStep result = newStep(MoveStepType.CLEAR_MINEFIELD);
         result.mf = Objects.requireNonNull(mf);
         return result;
     }
 
+    /** Create a new free step */
     public static MoveStep newFreeAction(MoveStepType type) {
-        MoveStep result = new MoveStep(type);
+        MoveStep result = newStep(type);
         result.noCost = true;
         return result;
     }
 
+    /** Create a new "recover an entity" step (RECOVER, JOIN) */
     public static MoveStep newRecovery(MoveStepType type, int recovery) {
         ensureType(type, MoveStepType.RECOVER, MoveStepType.JOIN);
-        MoveStep result = new MoveStep(type);
+        MoveStep result = newStep(type);
         result.recoveryUnit = recovery;
         return result;
     }
 
+    /** Create a new "lay mines" step */
     public static MoveStep newMineLaying(int mineToLay) {
-        MoveStep result = new MoveStep(MoveStepType.LAY_MINE);
+        MoveStep result = newStep(MoveStepType.LAY_MINE);
         result.mineToLay = mineToLay;
         return result;
+    }
+
+    /** Create a step as copy of another step */
+    public static MoveStep copyOf(MoveStep other) {
+        return new MoveStep(other);
     }
 
     private MoveStepType type = MoveStepType.NONE;
@@ -226,7 +245,7 @@ public class MoveStep implements Serializable {
     private ArrayList<Coords> crushedBuildingLocs = new ArrayList<Coords>();
 
     /** Copy constructor */
-    public MoveStep(MoveStep other) {
+    private MoveStep(MoveStep other) {
         this.type = other.type;
         this.hasEverUnloaded = other.hasEverUnloaded;
         // Targeted-containing paths - CHARGE, DFA, MOUNT, UNLOAD
@@ -253,7 +272,7 @@ public class MoveStep implements Serializable {
     /**
      * Create a step of the given type.
      */
-    public MoveStep(MoveStepType type) {
+    private MoveStep(MoveStepType type) {
         this.type = type;
         this.hasEverUnloaded = (type == MoveStepType.UNLOAD) || (type == MoveStepType.LAUNCH)
             || (type == MoveStepType.DROP) || (type == MoveStepType.UNDOCK);
@@ -575,7 +594,7 @@ public class MoveStep implements Serializable {
 
         // Is this the first step?
         if (prev == null) {
-            prev = new MoveStep(MoveStepType.FORWARDS);
+            prev = newStep(MoveStepType.FORWARDS);
             prev.setFromEntity(entity, game);
             // Bug 1519330 - its not a first step when continuing after a fall
             setFirstStep(prev.mpUsed == 0); 
