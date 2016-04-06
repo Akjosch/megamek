@@ -61,7 +61,7 @@ public class MoveStep implements Serializable {
 
     /** Create a new unload-target-at-position step */
     public static MoveStep newUnload(Targetable target, Coords pos) {
-        MoveStep result = newStep(MoveStepType.UNLOAD);
+        MoveStep result = new MoveStep(MoveStepType.UNLOAD);
         result.targetId = target.getTargetId();
         result.targetType = target.getTargetType();
         result.targetPos = pos;
@@ -71,7 +71,7 @@ public class MoveStep implements Serializable {
     /** Create a new step involving some target (MOUNT, UNLOAD, DFA, CHARGE) */
     public static MoveStep newTargeted(MoveStepType type, Targetable target) {
         ensureType(type, MoveStepType.MOUNT, MoveStepType.UNLOAD, MoveStepType.DFA, MoveStepType.CHARGE);
-        MoveStep result = newStep(type);
+        MoveStep result = new MoveStep(type);
         result.targetId = target.getTargetId();
         result.targetType = target.getTargetType();
         return result;
@@ -80,14 +80,14 @@ public class MoveStep implements Serializable {
     /** Create a new step launching an entity (LAUNCH, UNDOCK, DROP) */
     public static MoveStep newLaunch(MoveStepType type, TreeMap<Integer, Vector<Integer>> targets) {
         ensureType(type, MoveStepType.LAUNCH, MoveStepType.UNDOCK, MoveStepType.DROP);
-        MoveStep result = newStep(type);
+        MoveStep result = new MoveStep(type);
         result.launched = new TreeMap<>(targets);
         return result;
     }
 
     /** Creating a new maneuver step with the given type */
     public static MoveStep newManeuver(int manType) {
-        MoveStep result = newStep(MoveStepType.MANEUVER);
+        MoveStep result = new MoveStep(MoveStepType.MANEUVER);
         result.maneuverType = manType;
         return result;
     }
@@ -97,7 +97,7 @@ public class MoveStep implements Serializable {
         ensureType(type, MoveStepType.ACC, MoveStepType.DEC, MoveStepType.UP, MoveStepType.DOWN,
             MoveStepType.FORWARDS, MoveStepType.LATERAL_LEFT, MoveStepType.LATERAL_RIGHT,
             MoveStepType.TURN_LEFT, MoveStepType.TURN_RIGHT, MoveStepType.LOOP);
-        MoveStep result = newStep(type);
+        MoveStep result = new MoveStep(type);
         result.maneuver = true;
         result.noCost = true;
         return result;
@@ -105,14 +105,14 @@ public class MoveStep implements Serializable {
 
     /** Create a new "clear mine field" step for the given mine field */
     public static MoveStep newClearMinefield(Minefield mf) {
-        MoveStep result = newStep(MoveStepType.CLEAR_MINEFIELD);
+        MoveStep result = new MoveStep(MoveStepType.CLEAR_MINEFIELD);
         result.mf = Objects.requireNonNull(mf);
         return result;
     }
 
     /** Create a new free step */
     public static MoveStep newFreeAction(MoveStepType type) {
-        MoveStep result = newStep(type);
+        MoveStep result = new MoveStep(type);
         result.noCost = true;
         return result;
     }
@@ -120,14 +120,14 @@ public class MoveStep implements Serializable {
     /** Create a new "recover an entity" step (RECOVER, JOIN) */
     public static MoveStep newRecovery(MoveStepType type, int recovery) {
         ensureType(type, MoveStepType.RECOVER, MoveStepType.JOIN);
-        MoveStep result = newStep(type);
+        MoveStep result = new MoveStep(type);
         result.recoveryUnit = recovery;
         return result;
     }
 
     /** Create a new "lay mines" step */
     public static MoveStep newMineLaying(int mineToLay) {
-        MoveStep result = newStep(MoveStepType.LAY_MINE);
+        MoveStep result = new MoveStep(MoveStepType.LAY_MINE);
         result.mineToLay = mineToLay;
         return result;
     }
