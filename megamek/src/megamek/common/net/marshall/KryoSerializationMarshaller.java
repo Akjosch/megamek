@@ -11,16 +11,20 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+import megamek.common.Board;
 import megamek.common.BoardDimensions;
+import megamek.common.Hex;
 import megamek.common.IGame;
 import megamek.common.InitiativeRoll;
 import megamek.common.MapSettings;
 import megamek.common.PlanetaryConditions;
 import megamek.common.Player;
+import megamek.common.Terrain;
 import megamek.common.net.Packet;
 import megamek.common.net.marshall.kryo.BoardDimensionsSerializer;
 import megamek.common.net.marshall.kryo.PacketSerializer;
 import megamek.common.net.marshall.kryo.PlayerFieldSerializer;
+import megamek.common.net.marshall.kryo.TerrainSerializer;
 import megamek.common.options.GameOptions;
 import megamek.common.options.Option;
 
@@ -46,6 +50,9 @@ public class KryoSerializationMarshaller extends PacketMarshaller {
             kryo.register(InitiativeRoll.class);
             kryo.register(Option.class);
             kryo.register(BoardDimensions.class, new BoardDimensionsSerializer());
+            kryo.register(Board.class);
+            kryo.register(Hex.class);
+            kryo.register(Terrain.class, new TerrainSerializer());
             return kryo;
         };
     };
