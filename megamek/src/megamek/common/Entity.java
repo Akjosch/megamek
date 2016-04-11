@@ -754,8 +754,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
 
     protected boolean useReducedOverheatModifierBV = false;
 
-    private final Set<Integer> attackedByThisTurn =
-            Collections.newSetFromMap(new ConcurrentHashMap<Integer, Boolean>());
+    private final Map<Integer, Boolean> attackedByThisTurn = new ConcurrentHashMap<>();
 
     /**
      * Determines the sort order for weapons in the UnitDisplay weapon list.
@@ -12522,7 +12521,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
         return Math.ceil(total / 5) / 2;
     }
 
-    public class EntityFluff implements Serializable {
+    public static class EntityFluff implements Serializable {
         /**
          *
          */
@@ -13734,7 +13733,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
     }
 
     public void addAttackedByThisTurn(int entityId) {
-        attackedByThisTurn.add(entityId);
+        attackedByThisTurn.put(entityId, true);
     }
 
     public void clearAttackedByThisTurn() {
@@ -13742,7 +13741,7 @@ public abstract class Entity extends TurnOrdered implements Transporter,
     }
 
     public Collection<Integer> getAttackedByThisTurn() {
-        return new HashSet<>(attackedByThisTurn);
+        return new HashSet<>(attackedByThisTurn.keySet());
     }
 
     public WeaponSortOrder getWeaponSortOrder() {

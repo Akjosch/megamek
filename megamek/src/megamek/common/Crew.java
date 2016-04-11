@@ -123,6 +123,10 @@ public class Crew implements Serializable {
      */
     static public final int MAX_SKILL = 8;
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private Crew() {}
+    
     /**
      * Creates a nameless P5/G4 crew of the given size.
      *

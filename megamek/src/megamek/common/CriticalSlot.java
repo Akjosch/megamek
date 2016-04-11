@@ -51,6 +51,10 @@ public class CriticalSlot implements Serializable {
 
     private boolean armored = false; // Armored Component Rule
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private CriticalSlot() {}
+    
     public CriticalSlot(int type, int index) {
         this(type, index, true, false);
     }

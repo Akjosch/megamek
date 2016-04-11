@@ -66,6 +66,10 @@ public class Sensor implements Serializable {
             "Mech Seismic", "Vehicle Seismic", "EW Equipment", "Nova CEWS", "Beagle Active Probe Prototype"};
     public static final int SIZE = sensorNames.length;
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private Sensor() {}
+    
     /**
      * Constructor
      */

@@ -134,6 +134,10 @@ public class Engine implements Serializable {
     private int engineFlags;
     private int baseChassisHeatSinks = -1;
     public StringBuffer problem = new StringBuffer("Illegal engine: ");
+    
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private Engine() {}
 
     /**
      * The constructor takes the rating of the engine, the type of engine and
