@@ -30,7 +30,7 @@ class NativeSerializationMarshaller extends PacketMarshaller {
     /*
      * (non-Javadoc)
      * 
-     * @see megamek.common.net.marshall.PacketMarshaller#marshall(megamek.common.net.Packet,
+     * @see PacketMarshaller#marshall(megamek.common.net.Packet,
      *      java.io.OutputStream)
      */
     @Override
@@ -44,7 +44,7 @@ class NativeSerializationMarshaller extends PacketMarshaller {
     /*
      * (non-Javadoc)
      * 
-     * @see megamek.common.net.marshall.PacketMarshaller#unmarshall(java.io.InputStream)
+     * @see PacketMarshaller#unmarshall(java.io.InputStream)
      */
     @Override
     public Packet unmarshall(InputStream stream) throws Exception {

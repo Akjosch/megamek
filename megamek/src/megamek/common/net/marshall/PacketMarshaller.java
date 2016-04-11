@@ -19,23 +19,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.esotericsoftware.kryo.Kryo;
+
 import megamek.common.net.Packet;
 
 /**
- * Generic marshaller that [un]marshalls the <code>Packet</code>
+ * Generic marshaller that [un]marshalls the {@link Packet}
  */
 public abstract class PacketMarshaller {
 
-    /**
-     * Java native serialization marshalling
-     */
+    /** Java native serialization marshalling */
     public static final int NATIVE_SERIALIZATION_MARSHALING = 0;
+    /** {@link Kryo} serialization */
+    public static final int KRYO_SERIALIZATION_MARSHALING = 1;
 
     /**
      * Marshalls the packet data into the <code>byte[]</code>
      *
      * @param packet packet to marshall
-     * @return marshalled representation of the given <code>Packet</code>
+     * @return marshalled representation of the given {@link Packet}
      */
     public byte[] marshall(Packet packet) {
         ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -50,11 +52,10 @@ public abstract class PacketMarshaller {
     }
 
     /**
-     * Marshalls the packet data into the given <code>OutputStream</code>
+     * Marshalls the packet data into the given {@link OutputStream}
      *
-     * @param packet packet to marshall
-     * @param stream <code>OutputStream</code> to marshall the
-     *            <code>Packet</code> to
+     * @param packet {@link Packet} to marshall
+     * @param stream {@link OutputStream} to marshall the {@link Packet} to
      * @throws Exception
      */
     public abstract void marshall(Packet packet, OutputStream stream)
@@ -64,8 +65,7 @@ public abstract class PacketMarshaller {
      * Unmarshalls the packet data from the given <code>byte[]</code> array
      *
      * @param data <code>byte[]</code> array to unmarshall the packet from
-     * @return the new <code>Packet</code>unmarshalled from the given
-     *         <code>byte[]</code> array
+     * @return the new {@link Packet} unmarshalled from the given <code>byte[]</code> array
      */
     public Packet unmarshall(byte[] data) {
         try {
@@ -78,11 +78,10 @@ public abstract class PacketMarshaller {
     }
 
     /**
-     * Unmarshalls the packet data from the given <code>InputStream</code>
+     * Unmarshalls the packet data from the given {@link InputStream}
      *
-     * @param stream <code>InputStream</code> to unmarshall the packet from
-     * @return the new <code>Packet</code>unmarshalled from the given
-     *         <code>InputStream</code>
+     * @param stream {@link InputStream} to unmarshall the packet from
+     * @return the new {@link Packet} unmarshalled from the given {@link InputStream}
      * @throws Exception
      */
     public abstract Packet unmarshall(InputStream stream) throws Exception;

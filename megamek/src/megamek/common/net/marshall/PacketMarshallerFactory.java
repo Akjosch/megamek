@@ -19,6 +19,7 @@ public class PacketMarshallerFactory {
     private static PacketMarshallerFactory instance = new PacketMarshallerFactory();
 
     private NativeSerializationMarshaller nativeSerializationMarshaller;
+    private PacketMarshaller kryoSerializationMarshaller;
 
     private PacketMarshallerFactory() {
     }
@@ -34,6 +35,11 @@ public class PacketMarshallerFactory {
                     nativeSerializationMarshaller = new NativeSerializationMarshaller();
                 }
                 return nativeSerializationMarshaller;
+            case PacketMarshaller.KRYO_SERIALIZATION_MARSHALING:
+                if (kryoSerializationMarshaller == null) {
+                    kryoSerializationMarshaller = new KryoSerializationMarshaller();
+                }
+                return kryoSerializationMarshaller;
             default:
                 return null;
         }
