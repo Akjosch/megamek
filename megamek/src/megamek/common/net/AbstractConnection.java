@@ -40,7 +40,7 @@ public abstract class AbstractConnection implements IConnection {
     private static PacketMarshallerFactory marshallerFactory = PacketMarshallerFactory
             .getInstance();
 
-    private static final int DEFAULT_MARSHALLING = PacketMarshaller.NATIVE_SERIALIZATION_MARSHALING;
+    private static final int DEFAULT_MARSHALLING = PacketMarshaller.KRYO_SERIALIZATION_MARSHALING;
 
     /**
      * Peer Host Non null in case if it's a client connection
