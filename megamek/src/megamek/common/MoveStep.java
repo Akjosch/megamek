@@ -33,7 +33,7 @@ import megamek.common.MovePath.MoveStepType;
 import megamek.common.options.OptionsConstants;
 
 /**
- * A single step in the entity's movment.  Since the path planner uses shallow
+ * A single step in the entity's movement.  Since the path planner uses shallow
  * copies of MovePaths, multiple paths may share the same MoveStep, so this
  * class needs to be agnostic of what path it belongs to.
  */
@@ -290,7 +290,7 @@ public class MoveStep implements Serializable {
     /**
      * Set the target of the current step.
      *
-     * @param target - the <code>Targetable</code> that is the target of this step.
+     * @param target - the {@link Targetable} that is the target of this step.
      *               For example, the enemy being charged. If there is no target,
      *               pass a <code>null</code>
      */
@@ -307,8 +307,8 @@ public class MoveStep implements Serializable {
     /**
      * Get the target of the current step.
      *
-     * @param game - The <code>Game</code> object.
-     * @return The <code>Targetable</code> that is the target of this step. For
+     * @param game - the {@link IGame} object
+     * @return The {@link Targetable} that is the target of this step. For
      *         example, the enemy being charged. This value may be
      *         <code>null</code>
      */
@@ -629,7 +629,7 @@ public class MoveStep implements Serializable {
                 setMp((isJumping || isHasJustStood() || (isInfantry && !isFieldArtillery)) ? 0
                         : 1);
                 if (entity.isAirborne() && (entity instanceof Aero)) {
-                    setMp(asfTurnCost(game, getType(), entity));
+                    setMp(getASFTurnCost(game, getType(), entity));
                     setNTurns(getNTurns() + 1);
 
                     if (useAeroAtmosphere(game, entity)) {
@@ -3099,7 +3099,7 @@ public class MoveStep implements Serializable {
         return velocityLeft;
     }
 
-    private int asfTurnCost(IGame game, MoveStepType direction, Entity entity) {
+    private int getASFTurnCost(IGame game, MoveStepType direction, Entity entity) {
 
         // jumpships (but not space stations and warships) never pay
         if ((entity instanceof Jumpship) && !(entity instanceof Warship)
