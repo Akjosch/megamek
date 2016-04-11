@@ -13,10 +13,13 @@ import com.esotericsoftware.kryo.io.Output;
 
 import megamek.common.Board;
 import megamek.common.BoardDimensions;
+import megamek.common.Building;
+import megamek.common.Coords;
 import megamek.common.Hex;
 import megamek.common.IGame;
 import megamek.common.InitiativeRoll;
 import megamek.common.MapSettings;
+import megamek.common.Mounted;
 import megamek.common.PlanetaryConditions;
 import megamek.common.Player;
 import megamek.common.Terrain;
@@ -50,9 +53,12 @@ public class KryoSerializationMarshaller extends PacketMarshaller {
             kryo.register(InitiativeRoll.class);
             kryo.register(Option.class);
             kryo.register(BoardDimensions.class, new BoardDimensionsSerializer());
+            kryo.register(Coords.class);
             kryo.register(Board.class);
             kryo.register(Hex.class);
             kryo.register(Terrain.class, new TerrainSerializer());
+            kryo.register(Building.class);
+            kryo.register(Mounted.class);
             return kryo;
         };
     };

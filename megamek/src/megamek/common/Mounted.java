@@ -185,6 +185,10 @@ public class Mounted implements Serializable, RoundUpdated, PhaseUpdated {
      */
     private boolean squadSupportWeapon;
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private Mounted() {}
+    
     /** Creates new Mounted */
     public Mounted(Entity entity, EquipmentType type) {
         this.entity = entity;

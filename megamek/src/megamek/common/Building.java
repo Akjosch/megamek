@@ -261,6 +261,10 @@ public class Building implements Serializable {
     // TODO: leaving out Castles Brian until issues with damage scaling are
     // resolved
     // public static final int CASTLE_BRIAN = 3;
+    
+    /** Serialisation */
+    @SuppressWarnings("unused")
+    private Building() {}
 
     /**
      * Construct a building for the given coordinates from the board's
