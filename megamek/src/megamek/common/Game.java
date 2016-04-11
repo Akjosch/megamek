@@ -759,7 +759,7 @@ public class Game implements Serializable, IGame {
      * Returns the current turn vector
      */
     public List<GameTurn> getTurnVector() {
-        return Collections.unmodifiableList(turnVector);
+        return new ArrayList<>(turnVector);
     }
 
     /**

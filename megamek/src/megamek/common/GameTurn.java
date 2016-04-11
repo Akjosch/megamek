@@ -46,6 +46,10 @@ public class GameTurn implements Serializable {
      * of whether this turn was generated as one of these multi-turns.
      */
     private boolean isMultiTurn = false;
+    
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private GameTurn() {}
 
     /** Creates a new instance of GameTurn */
     public GameTurn(int playerId) {
