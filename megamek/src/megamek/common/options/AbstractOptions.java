@@ -15,10 +15,13 @@
 package megamek.common.options;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -30,7 +33,7 @@ public abstract class AbstractOptions implements IOptions, Serializable {
      *
      */
     private static final long serialVersionUID = 6406883135074654379L;
-    private Hashtable<String, IOption> optionsHash = new Hashtable<String, IOption>();
+    private Map<String, IOption> optionsHash = new HashMap<String, IOption>();
 
     protected AbstractOptions() {
         initialize();
@@ -48,8 +51,8 @@ public abstract class AbstractOptions implements IOptions, Serializable {
      *
      * @see megamek.common.IOptions#getOptions()
      */
-    public Enumeration<IOption> getOptions() {
-        return optionsHash.elements();
+    public Collection<IOption> getOptions() {
+        return optionsHash.values();
     }
 
     /*

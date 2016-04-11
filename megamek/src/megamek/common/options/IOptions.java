@@ -14,6 +14,7 @@
 
 package megamek.common.options;
 
+import java.util.Collection;
 import java.util.Enumeration;
 
 /**
@@ -35,7 +36,7 @@ public interface IOptions {
      * 
      * @return <code>Enumeration</code> of the <code>IOption</code>
      */
-    public abstract Enumeration<IOption> getOptions();
+    public abstract Collection<IOption> getOptions();
 
     /**
      * Returns the option by name or <code>null</code> if there is no such
