@@ -34,6 +34,9 @@ public class DisplacementAttackAction extends AbstractAttackAction {
     private static final long serialVersionUID = -1713221946987876208L;
     private Coords targetPos;
 
+    /** Serialisation support */
+    protected DisplacementAttackAction() {}
+
     /** Creates new DisplacementAttackAction */
     public DisplacementAttackAction(int entityId, int targetId, Coords targetPos) {
         super(entityId, targetId);

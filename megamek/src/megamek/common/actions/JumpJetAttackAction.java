@@ -41,6 +41,9 @@ public class JumpJetAttackAction extends PhysicalAttackAction {
 
     private int leg;
 
+    /** Serialisation support */
+    protected JumpJetAttackAction() {}
+
     public JumpJetAttackAction(int entityId, int targetId, int leg) {
         super(entityId, targetId);
         this.leg = leg;

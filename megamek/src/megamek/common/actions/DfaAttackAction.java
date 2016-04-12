@@ -56,6 +56,9 @@ public class DfaAttackAction extends DisplacementAttackAction {
      */
     private static final long serialVersionUID = 3953889779582616903L;
 
+    /** Serialisation support */
+    protected DfaAttackAction() {}
+
     /**
      * Creates new DfaAttackAction
      */

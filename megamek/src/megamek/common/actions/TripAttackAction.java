@@ -36,6 +36,9 @@ public class TripAttackAction extends PhysicalAttackAction {
      */
     private static final long serialVersionUID = -8639566786588420601L;
 
+    /** Serialisation support */
+    protected TripAttackAction() {}
+
     public TripAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

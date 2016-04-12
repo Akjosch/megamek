@@ -61,6 +61,9 @@ public class ChargeAttackAction extends DisplacementAttackAction {
      */
     private static final long serialVersionUID = -3549351664290057785L;
 
+    /** Serialisation support */
+    protected ChargeAttackAction() {}
+
     public ChargeAttackAction(Entity attacker, Targetable target) {
         this(attacker.getId(), target.getTargetType(), target.getTargetId(),
              target.getPosition());

@@ -20,6 +20,9 @@ public class DodgeAction extends AbstractEntityAction {
      */
     private static final long serialVersionUID = 918785289096319255L;
 
+    /** Serialisation support */
+    protected DodgeAction() {}
+    
     public DodgeAction(int entityId) {
         super(entityId);
     }

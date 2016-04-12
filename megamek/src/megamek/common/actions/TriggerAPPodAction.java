@@ -22,6 +22,9 @@ public class TriggerAPPodAction extends AbstractEntityAction {
     /** Save the equipment ID of the AP Pod being triggered. */
     int podId;
 
+    /** Serialisation support */
+    protected TriggerAPPodAction() {}
+
     /**
      * Trigger the indicated AP Pod on the entity with the given entity ID.
      * 

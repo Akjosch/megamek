@@ -42,6 +42,9 @@ public abstract class AbstractAttackAction extends AbstractEntityAction
     private int targetType;
     private int targetId;
 
+    /** Serialisation support */
+    protected AbstractAttackAction() {}
+
     // default to attacking an entity, since this is what most of them are
     public AbstractAttackAction(int entityId, int targetId) {
         super(entityId);

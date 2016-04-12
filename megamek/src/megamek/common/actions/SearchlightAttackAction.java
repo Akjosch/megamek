@@ -37,6 +37,9 @@ public class SearchlightAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = 6699459935811592434L;
 
+    /** Serialisation support */
+    protected SearchlightAttackAction() {}
+
     // default to attacking an entity
     public SearchlightAttackAction(int entityId, int targetId) {
         super(entityId, targetId);

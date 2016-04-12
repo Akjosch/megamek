@@ -42,6 +42,9 @@ public class BrushOffAttackAction extends AbstractAttackAction {
 
     private int arm;
 
+    /** Serialisation support */
+    protected BrushOffAttackAction() {}
+
     public BrushOffAttackAction(int entityId, int targetType, int targetId,
                                 int arm) {
         super(entityId, targetType, targetId);

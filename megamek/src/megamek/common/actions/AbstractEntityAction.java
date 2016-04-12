@@ -27,6 +27,9 @@ public abstract class AbstractEntityAction implements Serializable,
     private static final long serialVersionUID = -758003433608975464L;
     private int entityId;
 
+    /** Serialisation support */
+    protected AbstractEntityAction() {}
+
     public AbstractEntityAction(int entityId) {
         this.entityId = entityId;
     }

@@ -25,6 +25,9 @@ public class TriggerBPodAction extends AbstractEntityAction {
     int podId;
     int targetId;
 
+    /** Serialisation support */
+    protected TriggerBPodAction() {}
+
     /**
      * Trigger the indicated AP Pod on the entity with the given entity ID.
      *

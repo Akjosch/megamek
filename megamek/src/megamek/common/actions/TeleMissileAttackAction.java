@@ -39,6 +39,9 @@ public class TeleMissileAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = -1054613811287285482L;
 
+    /** Serialisation support */
+    protected TeleMissileAttackAction() {}
+
     public TeleMissileAttackAction(Entity attacker, Targetable target) {
         super(attacker.getId(), target.getTargetType(), target.getTargetId());
     }

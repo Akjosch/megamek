@@ -39,6 +39,9 @@ public class PushAttackAction extends DisplacementAttackAction {
      */
     private static final long serialVersionUID = 6878038939232914083L;
 
+    /** Serialisation support */
+    protected PushAttackAction() {}
+
     public PushAttackAction(int entityId, int targetId, Coords targetPos) {
         super(entityId, targetId, targetPos);
     }

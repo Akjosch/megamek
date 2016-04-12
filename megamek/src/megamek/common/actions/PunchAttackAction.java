@@ -45,6 +45,9 @@ public class PunchAttackAction extends PhysicalAttackAction {
     private boolean leftBlade = false;
     private boolean rightBlade = false;
 
+    /** Serialisation support */
+    protected PunchAttackAction() {}
+
     public PunchAttackAction(int entityId, int targetId, int arm) {
         super(entityId, targetId);
         this.arm = arm;

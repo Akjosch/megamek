@@ -35,6 +35,9 @@ public class ThrashAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = -1527653560370040648L;
 
+    /** Serialisation support */
+    protected ThrashAttackAction() {}
+
     public ThrashAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

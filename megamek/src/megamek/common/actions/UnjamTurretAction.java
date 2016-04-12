@@ -21,6 +21,9 @@ public class UnjamTurretAction extends AbstractEntityAction {
      */
     private static final long serialVersionUID = -872903980148938388L;
 
+    /** Serialisation support */
+    protected UnjamTurretAction() {}
+
     public UnjamTurretAction(int entityId) {
         super(entityId);
     }

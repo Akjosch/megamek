@@ -46,6 +46,9 @@ public class KickAttackAction extends PhysicalAttackAction {
 
     private int leg;
 
+    /** Serialisation support */
+    protected KickAttackAction() {}
+
     public KickAttackAction(int entityId, int targetId, int leg) {
         super(entityId, targetId);
         this.leg = leg;

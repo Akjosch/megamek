@@ -22,6 +22,9 @@ public class RepairWeaponMalfunctionAction extends AbstractEntityAction {
     private static final long serialVersionUID = 7947928598199505776L;
     private int weaponId;
 
+    /** Serialisation support */
+    protected RepairWeaponMalfunctionAction() {}
+
     public RepairWeaponMalfunctionAction(int entityId, int weaponId) {
         super(entityId);
         this.weaponId = weaponId;

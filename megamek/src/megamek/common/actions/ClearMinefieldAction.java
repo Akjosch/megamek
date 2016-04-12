@@ -23,6 +23,9 @@ public class ClearMinefieldAction extends AbstractEntityAction {
     
     private Minefield mf;
 
+    /** Serialisation support */
+    protected ClearMinefieldAction() {}
+    
     public ClearMinefieldAction(int entityId, Minefield mf) {
         super(entityId);
         this.mf = mf;

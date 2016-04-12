@@ -26,6 +26,9 @@ public class UnloadStrandedAction extends AbstractEntityAction {
     private static final long serialVersionUID = -8319076127334875298L;
     private int playerId;
 
+    /** Serialisation support */
+    protected UnloadStrandedAction() {}
+
     public UnloadStrandedAction(int playerId, int entityId) {
         super(entityId);
         this.playerId = playerId;

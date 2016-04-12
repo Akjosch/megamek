@@ -42,6 +42,9 @@ public class FindClubAction extends AbstractEntityAction {
      */
     private static final long serialVersionUID = -8948591442556777640L;
 
+    /** Serialisation support */
+    protected FindClubAction() {}
+
     /**
      * Creates new FindClubAction
      */

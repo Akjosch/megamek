@@ -38,6 +38,9 @@ public class GrappleAttackAction extends PhysicalAttackAction {
      */
     private static final long serialVersionUID = -4178252788550426489L;
 
+    /** Serialisation support */
+    protected GrappleAttackAction() {}
+
     public GrappleAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

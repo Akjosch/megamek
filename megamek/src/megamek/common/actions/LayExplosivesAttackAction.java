@@ -30,6 +30,9 @@ public class LayExplosivesAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = -8799415934269686590L;
 
+    /** Serialisation support */
+    protected LayExplosivesAttackAction() {}
+
     public LayExplosivesAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

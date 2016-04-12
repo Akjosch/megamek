@@ -144,6 +144,9 @@ public class WeaponAttackAction extends AbstractAttackAction implements
      * added once.
      */
     protected boolean isStrafingFirstShot = false;
+    
+    /** Serialisation support */
+    protected WeaponAttackAction() {}
 
     // default to attacking an entity
     public WeaponAttackAction(int entityId, int targetId, int weaponId) {

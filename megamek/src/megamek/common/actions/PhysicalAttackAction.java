@@ -42,6 +42,9 @@ public class PhysicalAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = -4702357516725749181L;
 
+    /** Serialisation support */
+    protected PhysicalAttackAction() {}
+
     public PhysicalAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

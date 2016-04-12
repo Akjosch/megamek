@@ -50,6 +50,9 @@ public class ClubAttackAction extends PhysicalAttackAction {
     private Mounted club;
     private int aiming;
 
+    /** Serialisation support */
+    protected ClubAttackAction() {}
+
     /**
      * Creates new ClubAttackAction
      */

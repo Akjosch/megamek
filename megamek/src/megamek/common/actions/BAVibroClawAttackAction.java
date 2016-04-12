@@ -35,6 +35,9 @@ public class BAVibroClawAttackAction extends AbstractAttackAction {
      */
     private static final long serialVersionUID = 1432011536091665084L;
 
+    /** Serialisation support */
+    protected BAVibroClawAttackAction() {}
+
     public BAVibroClawAttackAction(int entityId, int targetId) {
         super(entityId, targetId);
     }

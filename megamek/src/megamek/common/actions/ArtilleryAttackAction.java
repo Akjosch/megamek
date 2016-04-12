@@ -39,6 +39,9 @@ public class ArtilleryAttackAction extends WeaponAttackAction implements
     protected int playerId;
     private Coords firingCoords;
 
+    /** Serialisation support */
+    protected ArtilleryAttackAction() {}
+
     public ArtilleryAttackAction(int entityId, int targetType, int targetId,
             int weaponId, IGame game) {
         super(entityId, targetType, targetId, weaponId);

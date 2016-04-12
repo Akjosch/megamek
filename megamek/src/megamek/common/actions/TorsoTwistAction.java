@@ -21,6 +21,9 @@ public class TorsoTwistAction extends AbstractEntityAction {
     private static final long serialVersionUID = -3382479723829018297L;
     private int facing;
 
+    /** Serialisation support */
+    protected TorsoTwistAction() {}
+
     public TorsoTwistAction(int entityId, int facing) {
         super(entityId);
         this.facing = facing;
