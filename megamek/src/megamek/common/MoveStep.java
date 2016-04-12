@@ -164,6 +164,10 @@ public class MoveStep implements Serializable {
      */
     private ArrayList<Coords> crushedBuildingLocs = new ArrayList<Coords>();
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private MoveStep() {}
+    
     /**
      * Create a step of the given type.
      *

@@ -131,6 +131,10 @@ public class MoveOption extends MovePath {
     private int facing;
     private boolean prone;
 
+    /** Serialisation support */
+    @SuppressWarnings("unused")
+    private MoveOption() {}
+    
     public MoveOption(IGame game, CEntity centity) {
         super(game, centity.entity);
         this.centity = centity;

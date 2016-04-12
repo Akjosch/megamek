@@ -93,6 +93,9 @@ public class MovePath implements Cloneable, Serializable {
 
     // is this move path being done using careful movement?
     private boolean careful = true;
+    
+    /** Serialisation support */
+    protected MovePath() {}
 
     /**
      * Generates a new, empty, movement path object.
