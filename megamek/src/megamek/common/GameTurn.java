@@ -147,6 +147,10 @@ public class GameTurn implements Serializable {
         private static final long serialVersionUID = -4209080275946913689L;
         private int entityId;
 
+        /** Serialisation support */
+        @SuppressWarnings("unused")
+        private SpecificEntityTurn() {}
+
         public SpecificEntityTurn(int playerId, int entityId) {
             super(playerId);
             this.entityId = entityId;
@@ -187,6 +191,10 @@ public class GameTurn implements Serializable {
          */
         private static final long serialVersionUID = -5104845305165987340L;
 
+        /** Serialisation support */
+        @SuppressWarnings("unused")
+        private TriggerAPPodTurn() {}
+
         public TriggerAPPodTurn(int playerId, int entityId) {
             super(playerId, entityId);
         }
@@ -218,6 +226,10 @@ public class GameTurn implements Serializable {
          */
         private static final long serialVersionUID = -9082006433957145275L;
         private String attackType = "";
+
+        /** Serialisation support */
+        @SuppressWarnings("unused")
+        private TriggerBPodTurn() {}
 
         public TriggerBPodTurn(int playerId, int entityId, String attackType) {
             super(playerId, entityId);
@@ -255,6 +267,10 @@ public class GameTurn implements Serializable {
          *
          */
         private static final long serialVersionUID = 5248356977626018582L;
+
+        /** Serialisation support */
+        @SuppressWarnings("unused")
+        private CounterGrappleTurn() {}
 
         public CounterGrappleTurn(int playerId, int entityId) {
             super(playerId, entityId);
@@ -432,6 +448,10 @@ public class GameTurn implements Serializable {
          */
         private static final long serialVersionUID = 2403095752478007872L;
         private int[] entityIds = null;
+
+        /** Serialisation support */
+        @SuppressWarnings("unused")
+        private UnloadStrandedTurn() {}
 
         /**
          * Any player that owns an entity whose ID is in the passed array should
